@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
 <head>
-<!-- 2022-01-12 Wed 20:27 -->
+<!-- 2022-01-17 一 12:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>如何使用wireshark解密https流量</title>
@@ -196,19 +196,23 @@
 <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
 </head>
 <body>
-<div id="content" class="content">
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="index.html"> HOME </a>
+</div><div id="content" class="content">
 <h1 class="title">如何使用wireshark解密https流量</h1>
 <div id="table-of-contents" role="doc-toc">
-<h2>Table of Contents</h2>
+<h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org5054051">1. 如何使用wireshark解密https流量</a>
+<li><a href="#orgae9cbc3">如何使用wireshark解密https流量</a>
 <ul>
-<li><a href="#org39ed45d">1.1. SSLKEYLOGFILE</a>
+<li><a href="#org3999531">SSLKEYLOGFILE</a>
 <ul>
-<li><a href="#org5fb307c">1.1.1. windows</a></li>
-<li><a href="#orgb03847d">1.1.2. Linux</a></li>
-<li><a href="#org3e36a1f">1.1.3. macOS</a></li>
+<li><a href="#org35fa197">windows</a></li>
+<li><a href="#org9cd2133">Linux</a></li>
+<li><a href="#org8ec672f">macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -216,29 +220,29 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-org5054051" class="outline-2">
-<h2 id="org5054051"><span class="section-number-2">1.</span> 如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-1">
+<div id="outline-container-orgae9cbc3" class="outline-2">
+<h2 id="orgae9cbc3">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-orgae9cbc3">
 </div>
-<div id="outline-container-org39ed45d" class="outline-3">
-<h3 id="org39ed45d"><span class="section-number-3">1.1.</span> SSLKEYLOGFILE</h3>
-<div class="outline-text-3" id="text-1-1">
+<div id="outline-container-org3999531" class="outline-3">
+<h3 id="org3999531">SSLKEYLOGFILE</h3>
+<div class="outline-text-3" id="text-org3999531">
 <p>
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 </p>
 </div>
-<div id="outline-container-org5fb307c" class="outline-4">
-<h4 id="org5fb307c"><span class="section-number-4">1.1.1.</span> windows</h4>
-<div class="outline-text-4" id="text-1-1-1">
+<div id="outline-container-org35fa197" class="outline-4">
+<h4 id="org35fa197">windows</h4>
+<div class="outline-text-4" id="text-org35fa197">
 <pre class="example">
 set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
 start firefox
 </pre>
 </div>
 </div>
-<div id="outline-container-orgb03847d" class="outline-4">
-<h4 id="orgb03847d"><span class="section-number-4">1.1.2.</span> Linux</h4>
-<div class="outline-text-4" id="text-1-1-2">
+<div id="outline-container-org9cd2133" class="outline-4">
+<h4 id="org9cd2133">Linux</h4>
+<div class="outline-text-4" id="text-org9cd2133">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 firefox
@@ -246,9 +250,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org3e36a1f" class="outline-4">
-<h4 id="org3e36a1f"><span class="section-number-4">1.1.3.</span> macOS</h4>
-<div class="outline-text-4" id="text-1-1-3">
+<div id="outline-container-org8ec672f" class="outline-4">
+<h4 id="org8ec672f">macOS</h4>
+<div class="outline-text-4" id="text-org8ec672f">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -290,8 +294,8 @@ tls and (http or http2)
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="author">Author: jamesarch</p>
-<p class="date">Created: 2022-01-12 Wed 20:27</p>
+<p class="author">&#20316;&#32773;: jamesarch</p>
+<p class="date">Created: 2022-01-17 一 12:49</p>
 </div>
 </body>
 </html>
