@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
 <head>
-<!-- 2022-01-17 一 12:49 -->
+<!-- 2022-01-17 一 13:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>如何使用wireshark解密https流量</title>
@@ -206,13 +206,13 @@
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgae9cbc3">如何使用wireshark解密https流量</a>
+<li><a href="#org091b3f5">如何使用wireshark解密https流量</a>
 <ul>
-<li><a href="#org3999531">SSLKEYLOGFILE</a>
+<li><a href="#org6d40af0">SSLKEYLOGFILE</a>
 <ul>
-<li><a href="#org35fa197">windows</a></li>
-<li><a href="#org9cd2133">Linux</a></li>
-<li><a href="#org8ec672f">macOS</a></li>
+<li><a href="#orgea24432">windows</a></li>
+<li><a href="#orgeb9fbb7">Linux</a></li>
+<li><a href="#org22de70c">macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -220,29 +220,29 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-orgae9cbc3" class="outline-2">
-<h2 id="orgae9cbc3">如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-orgae9cbc3">
+<div id="outline-container-org091b3f5" class="outline-2">
+<h2 id="org091b3f5">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-org091b3f5">
 </div>
-<div id="outline-container-org3999531" class="outline-3">
-<h3 id="org3999531">SSLKEYLOGFILE</h3>
-<div class="outline-text-3" id="text-org3999531">
+<div id="outline-container-org6d40af0" class="outline-3">
+<h3 id="org6d40af0">SSLKEYLOGFILE</h3>
+<div class="outline-text-3" id="text-org6d40af0">
 <p>
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 </p>
 </div>
-<div id="outline-container-org35fa197" class="outline-4">
-<h4 id="org35fa197">windows</h4>
-<div class="outline-text-4" id="text-org35fa197">
+<div id="outline-container-orgea24432" class="outline-4">
+<h4 id="orgea24432">windows</h4>
+<div class="outline-text-4" id="text-orgea24432">
 <pre class="example">
 set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
 start firefox
 </pre>
 </div>
 </div>
-<div id="outline-container-org9cd2133" class="outline-4">
-<h4 id="org9cd2133">Linux</h4>
-<div class="outline-text-4" id="text-org9cd2133">
+<div id="outline-container-orgeb9fbb7" class="outline-4">
+<h4 id="orgeb9fbb7">Linux</h4>
+<div class="outline-text-4" id="text-orgeb9fbb7">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 firefox
@@ -250,9 +250,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org8ec672f" class="outline-4">
-<h4 id="org8ec672f">macOS</h4>
-<div class="outline-text-4" id="text-org8ec672f">
+<div id="outline-container-org22de70c" class="outline-4">
+<h4 id="org22de70c">macOS</h4>
+<div class="outline-text-4" id="text-org22de70c">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -274,7 +274,7 @@ tls and (http or http2)
 
 <p>
 查看过滤结果 如下图所示
-<img src="./img/wireshark.png" alt="wireshark.png" />
+<img src="./asserts/img/wireshark.png" alt="wireshark.png" />
 </p>
 
 <p>
@@ -295,7 +295,7 @@ tls and (http or http2)
 </div>
 <div id="postamble" class="status">
 <p class="author">&#20316;&#32773;: jamesarch</p>
-<p class="date">Created: 2022-01-17 一 12:49</p>
+<p class="date">Created: 2022-01-17 一 13:32</p>
 </div>
 </body>
 </html>

@@ -22,7 +22,7 @@ open -a firefox
 之后可以通过 在过滤栏输入
 : tls and (http or http2)
 查看过滤结果 如下图所示
-[[./img/wireshark.png]]
+[[./asserts/img/wireshark.png]]
 
 参考链接
 
