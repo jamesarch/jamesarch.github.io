@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<!-- 2022-01-17 一 13:32 -->
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<!-- 2022-01-28 Fri 17:11 -->
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>如何使用wireshark解密https流量</title>
 <meta name="author" content="jamesarch" />
@@ -201,48 +199,49 @@
  |
  <a accesskey="H" href="index.html"> HOME </a>
 </div><div id="content" class="content">
+<header>
 <h1 class="title">如何使用wireshark解密https流量</h1>
-<div id="table-of-contents" role="doc-toc">
+</header><nav id="table-of-contents" role="doc-toc">
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org091b3f5">如何使用wireshark解密https流量</a>
+<li><a href="#orgb2d41fc">如何使用wireshark解密https流量</a>
 <ul>
-<li><a href="#org6d40af0">SSLKEYLOGFILE</a>
+<li><a href="#orgf91c15c">SSLKEYLOGFILE</a>
 <ul>
-<li><a href="#orgea24432">windows</a></li>
-<li><a href="#orgeb9fbb7">Linux</a></li>
-<li><a href="#org22de70c">macOS</a></li>
+<li><a href="#orgdef0cf5">windows</a></li>
+<li><a href="#orgfe8346a">Linux</a></li>
+<li><a href="#org7289188">macOS</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </div>
+</nav>
+<div id="outline-container-orgb2d41fc" class="outline-2">
+<h2 id="orgb2d41fc">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-orgb2d41fc">
 </div>
-<div id="outline-container-org091b3f5" class="outline-2">
-<h2 id="org091b3f5">如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-org091b3f5">
-</div>
-<div id="outline-container-org6d40af0" class="outline-3">
-<h3 id="org6d40af0">SSLKEYLOGFILE</h3>
-<div class="outline-text-3" id="text-org6d40af0">
+<div id="outline-container-orgf91c15c" class="outline-3">
+<h3 id="orgf91c15c">SSLKEYLOGFILE</h3>
+<div class="outline-text-3" id="text-orgf91c15c">
 <p>
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 </p>
 </div>
-<div id="outline-container-orgea24432" class="outline-4">
-<h4 id="orgea24432">windows</h4>
-<div class="outline-text-4" id="text-orgea24432">
+<div id="outline-container-orgdef0cf5" class="outline-4">
+<h4 id="orgdef0cf5">windows</h4>
+<div class="outline-text-4" id="text-orgdef0cf5">
 <pre class="example">
 set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
 start firefox
 </pre>
 </div>
 </div>
-<div id="outline-container-orgeb9fbb7" class="outline-4">
-<h4 id="orgeb9fbb7">Linux</h4>
-<div class="outline-text-4" id="text-orgeb9fbb7">
+<div id="outline-container-orgfe8346a" class="outline-4">
+<h4 id="orgfe8346a">Linux</h4>
+<div class="outline-text-4" id="text-orgfe8346a">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 firefox
@@ -250,9 +249,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org22de70c" class="outline-4">
-<h4 id="org22de70c">macOS</h4>
-<div class="outline-text-4" id="text-org22de70c">
+<div id="outline-container-org7289188" class="outline-4">
+<h4 id="org7289188">macOS</h4>
+<div class="outline-text-4" id="text-org7289188">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -274,7 +273,7 @@ tls and (http or http2)
 
 <p>
 查看过滤结果 如下图所示
-<img src="./asserts/img/wireshark.png" alt="wireshark.png" />
+<img src="./asserts/img/wireshark.png" alt="wireshark.png">
 </p>
 
 <p>
@@ -295,7 +294,7 @@ tls and (http or http2)
 </div>
 <div id="postamble" class="status">
 <p class="author">&#20316;&#32773;: jamesarch</p>
-<p class="date">Created: 2022-01-17 一 13:32</p>
+<p class="date">Created: 2022-01-28 Fri 17:11</p>
 </div>
 </body>
 </html>
