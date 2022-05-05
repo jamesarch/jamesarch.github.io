@@ -1,0 +1,43 @@
+#+TITLE: 使用suricata屏蔽APP
+* 原理
+suricata是一套IDS/IPS系统，因为需要实现一个拦截的功能，这里就需要使用到IPS模式，利用IPS来过滤数据包，从而实现拦截的方法。
+* 具体操作
+** 安装suricata
+这里以centos 7为例
+#+begin_src
+yum install epel-release yum-plugin-copr
+yum copr enable @oisf/suricata-latest
+yum install suricata
+#+end_src
+** 配置IDS模式
+IDS模式有网卡过滤和NFQUEUE两种模式，这里使用NFQUEUE，也可以根据自身需求来选择，安装完成之后，需要使用iptables来创建对应的规则拦截所有流量
+#+begin_src
+sudo iptables -A INPUT -j NFQUEUE --queue-bypass
+sudo iptables -A OUTPUT -j NFQUEUE --queue-bypass
+#+end_src
+这里的--queue-bypass选项是为了防止在流量没有进行处理的时候，不丢弃流量，从而影响正常的网络连接。
+之后在/etc/sysconfig/suricata文件里面将OPTIONS的内容改为以下内容
+#+begin_src
+OPTIONS="-q 0 --user suricata"
+#+end_src
+-q 0的意思是处理NFQUEUE 0的所有内容
+** 编写规则文件
+在编写规则文件之前，需要运行suricata-update更新下默认的规则，之后将以下规覆盖入到/var/lib/suricata/suricata.yaml文件中
+#+begin_src
+drop tcp any any <> any any (msg:"drop  WeChat tcp 16 "; content:"|16 F1 04|"; sid:6;)
+drop tcp any any <> any any (msg:"drop  WeChat tcp 17 "; content:"|17 F1 04|"; sid:7;)
+drop tcp any any <> any any (msg:"drop  WeChat tcp 19 "; content:"|19 F1 04|"; sid:8;)
+drop tcp any any <> any any (msg:"drop  upgrade mmtls"; content:"Upgrade|3A| mmtls";nocase;  sid:16;)
+drop tcp any any <> any any (msg:"drop  WeChat tcp UA"; content:"User-Agent|3A| MicroMessenger Client";  sid:5;)
+drop tcp any any <> any any (msg:"drop qq start tcp";content:"|02|";startswith;content:"|03|";endswith;sid:10;)
+drop udp any any <> any any (msg:"drop qq start udp";content:"|02|";startswith;content:"|03|";endswith;sid:11;)
+drop tls any any -> any any (msg:"block wx.qq.com";tls.cert_subject;content:"wx.qq.com"; sid:18;)
+#+end_src
+最后运行suricata -T检测规则是否合格，如果正常没报错的话，可以重启服务观察是否有拦截到流量
+#+begin_src
+systemctl restart suricata
+iptables -nvL #查看是否有流量经过
+tail -f /var/log/suricata/fast.log #查看是否有对应的输出
+#+end_src
+* 缺点
+经过测试在hyper-v环境下过滤100台左右的虚拟机会出现延迟高丢包的情况，猜测和网卡以及NFQUEUE性能有关。暂时没有深入研究原因
