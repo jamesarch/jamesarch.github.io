@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<!-- 2022-05-05 Thu 19:32 -->
+<!-- 2023-01-06 Fri 19:33 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>使用suricata屏蔽APP</title>
@@ -205,33 +205,33 @@
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org6e9c3c0">原理</a></li>
-<li><a href="#org7b99e68">具体操作</a>
+<li><a href="#orge1a2832">原理</a></li>
+<li><a href="#org2932347">具体操作</a>
 <ul>
-<li><a href="#org9ddbab3">安装suricata</a></li>
-<li><a href="#orga8b8eea">配置IDS模式</a></li>
-<li><a href="#org0dc6206">编写规则文件</a></li>
+<li><a href="#org3b88ddb">安装suricata</a></li>
+<li><a href="#org4ca0fa0">配置IDS模式</a></li>
+<li><a href="#org15c7b57">编写规则文件</a></li>
 </ul>
 </li>
-<li><a href="#org5739ceb">缺点</a></li>
+<li><a href="#org68d6377">缺点</a></li>
 </ul>
 </div>
 </nav>
-<div id="outline-container-org6e9c3c0" class="outline-2">
-<h2 id="org6e9c3c0">原理</h2>
-<div class="outline-text-2" id="text-org6e9c3c0">
+<div id="outline-container-orge1a2832" class="outline-2">
+<h2 id="orge1a2832">原理</h2>
+<div class="outline-text-2" id="text-orge1a2832">
 <p>
 suricata是一套IDS/IPS系统，因为需要实现一个拦截的功能，这里就需要使用到IPS模式，利用IPS来过滤数据包，从而实现拦截的方法。
 </p>
 </div>
 </div>
-<div id="outline-container-org7b99e68" class="outline-2">
-<h2 id="org7b99e68">具体操作</h2>
-<div class="outline-text-2" id="text-org7b99e68">
+<div id="outline-container-org2932347" class="outline-2">
+<h2 id="org2932347">具体操作</h2>
+<div class="outline-text-2" id="text-org2932347">
 </div>
-<div id="outline-container-org9ddbab3" class="outline-3">
-<h3 id="org9ddbab3">安装suricata</h3>
-<div class="outline-text-3" id="text-org9ddbab3">
+<div id="outline-container-org3b88ddb" class="outline-3">
+<h3 id="org3b88ddb">安装suricata</h3>
+<div class="outline-text-3" id="text-org3b88ddb">
 <p>
 这里以centos 7为例
 </p>
@@ -242,9 +242,9 @@ yum install suricata
 </pre>
 </div>
 </div>
-<div id="outline-container-orga8b8eea" class="outline-3">
-<h3 id="orga8b8eea">配置IDS模式</h3>
-<div class="outline-text-3" id="text-orga8b8eea">
+<div id="outline-container-org4ca0fa0" class="outline-3">
+<h3 id="org4ca0fa0">配置IDS模式</h3>
+<div class="outline-text-3" id="text-org4ca0fa0">
 <p>
 IDS模式有网卡过滤和NFQUEUE两种模式，这里使用NFQUEUE，也可以根据自身需求来选择，安装完成之后，需要使用iptables来创建对应的规则拦截所有流量
 </p>
@@ -264,9 +264,9 @@ OPTIONS="-q 0 --user suricata"
 </p>
 </div>
 </div>
-<div id="outline-container-org0dc6206" class="outline-3">
-<h3 id="org0dc6206">编写规则文件</h3>
-<div class="outline-text-3" id="text-org0dc6206">
+<div id="outline-container-org15c7b57" class="outline-3">
+<h3 id="org15c7b57">编写规则文件</h3>
+<div class="outline-text-3" id="text-org15c7b57">
 <p>
 在编写规则文件之前，需要运行suricata-update更新下默认的规则，之后将以下规覆盖入到/var/lib/suricata/suricata.yaml文件中
 </p>
@@ -291,18 +291,18 @@ tail -f /var/log/suricata/fast.log #查看是否有对应的输出
 </div>
 </div>
 </div>
-<div id="outline-container-org5739ceb" class="outline-2">
-<h2 id="org5739ceb">缺点</h2>
-<div class="outline-text-2" id="text-org5739ceb">
+<div id="outline-container-org68d6377" class="outline-2">
+<h2 id="org68d6377">缺点</h2>
+<div class="outline-text-2" id="text-org68d6377">
 <p>
-经过测试在hyper-v环境下过滤100台左右的虚拟机会出现延迟高丢包的情况，猜测和网卡以及NFQUEUE性能有关。暂时没有深入研究原因 
+经过测试在hyper-v环境下过滤100台左右的虚拟机会出现延迟高丢包的情况，猜测和网卡以及NFQUEUE性能有关。暂时没有深入研究原因
 </p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">&#20316;&#32773;: jamesarch</p>
-<p class="date">Created: 2022-05-05 Thu 19:32</p>
+<p class="date">Created: 2023-01-06 Fri 19:33</p>
 </div>
 </body>
 </html>

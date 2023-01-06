@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<!-- 2022-05-05 Thu 19:32 -->
+<!-- 2023-01-06 Fri 19:33 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>如何使用wireshark解密https流量</title>
@@ -205,13 +205,13 @@
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb2d41fc">如何使用wireshark解密https流量</a>
+<li><a href="#org1d71f14">如何使用wireshark解密https流量</a>
 <ul>
-<li><a href="#orgf91c15c">SSLKEYLOGFILE</a>
+<li><a href="#org69ef6d4">SSLKEYLOGFILE</a>
 <ul>
-<li><a href="#orgdef0cf5">windows</a></li>
-<li><a href="#orgfe8346a">Linux</a></li>
-<li><a href="#org7289188">macOS</a></li>
+<li><a href="#orgfe46445">windows</a></li>
+<li><a href="#org99c7f0d">Linux</a></li>
+<li><a href="#org9750b15">macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -219,29 +219,29 @@
 </ul>
 </div>
 </nav>
-<div id="outline-container-orgb2d41fc" class="outline-2">
-<h2 id="orgb2d41fc">如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-orgb2d41fc">
+<div id="outline-container-org1d71f14" class="outline-2">
+<h2 id="org1d71f14">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-org1d71f14">
 </div>
-<div id="outline-container-orgf91c15c" class="outline-3">
-<h3 id="orgf91c15c">SSLKEYLOGFILE</h3>
-<div class="outline-text-3" id="text-orgf91c15c">
+<div id="outline-container-org69ef6d4" class="outline-3">
+<h3 id="org69ef6d4">SSLKEYLOGFILE</h3>
+<div class="outline-text-3" id="text-org69ef6d4">
 <p>
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 </p>
 </div>
-<div id="outline-container-orgdef0cf5" class="outline-4">
-<h4 id="orgdef0cf5">windows</h4>
-<div class="outline-text-4" id="text-orgdef0cf5">
+<div id="outline-container-orgfe46445" class="outline-4">
+<h4 id="orgfe46445">windows</h4>
+<div class="outline-text-4" id="text-orgfe46445">
 <pre class="example">
 set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
 start firefox
 </pre>
 </div>
 </div>
-<div id="outline-container-orgfe8346a" class="outline-4">
-<h4 id="orgfe8346a">Linux</h4>
-<div class="outline-text-4" id="text-orgfe8346a">
+<div id="outline-container-org99c7f0d" class="outline-4">
+<h4 id="org99c7f0d">Linux</h4>
+<div class="outline-text-4" id="text-org99c7f0d">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 firefox
@@ -249,9 +249,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org7289188" class="outline-4">
-<h4 id="org7289188">macOS</h4>
-<div class="outline-text-4" id="text-org7289188">
+<div id="outline-container-org9750b15" class="outline-4">
+<h4 id="org9750b15">macOS</h4>
+<div class="outline-text-4" id="text-org9750b15">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -294,7 +294,7 @@ tls and (http or http2)
 </div>
 <div id="postamble" class="status">
 <p class="author">&#20316;&#32773;: jamesarch</p>
-<p class="date">Created: 2022-05-05 Thu 19:32</p>
+<p class="date">Created: 2023-01-06 Fri 19:33</p>
 </div>
 </body>
 </html>
