@@ -23,6 +23,7 @@ CSS_DIR = ROOT / "asserts" / "css"
 REF = re.compile(r'(?:href|src)="([^"]+)"')
 HTML_CLASS = re.compile(r'class="([^"]+)"')
 CSS_SELECTOR = re.compile(r"\.(org-[a-z0-9-]+)")
+PRE_BLOCK = re.compile(r"<pre\b.*?</pre>", re.S)
 
 
 def check_links(pages: list[Path]) -> list[str]:
@@ -35,17 +36,34 @@ def check_links(pages: list[Path]) -> list[str]:
                 ("http://", "https://", "mailto:", "data:", "//")
             ):
                 continue
-            if not (page.parent / unquote(target)).resolve().exists():
+            # 404 页的链接是根绝对路径(见 site.el 的 blog--absolutize):Pages 对
+            # 任意深度的不存在路径都回 404.html,相对路径会跟着请求路径跑偏。
+            # 这类要按站点根解析 —— pathlib 里 `page.parent / "/a/b"` 会丢掉左边,
+            # 直接去查真实文件系统的 /a/b,必然不存在,判成假断链。
+            base = ROOT if target.startswith("/") else page.parent
+            if not (base / unquote(target.lstrip("/"))).resolve().exists():
                 broken.append(f"{page.name}: {raw}")
     return broken
 
 
 def check_class_coverage(pages: list[Path]) -> list[str]:
-    """产物里每个 org-* class 都有样式规则。"""
+    """代码块里每个 token class 都有配色规则。
+
+    只看 <pre> 内部。htmlize 按 face 名生成 .org-keyword 这类 class,主题里那个
+    face 若只写了 :inherit 而没有自己的 :foreground,生成器可能把它跳过,于是
+    页面上某一类 token 悄悄退回默认色 —— 实测抓到过 .org-comment-delimiter,
+    注释的 `#' 和注释正文不同色,肉眼几乎看不出来。
+
+    <pre> 之外的 .org-ul / .org-src-container 这些是 ox-html 的结构 class,
+    本来就由标签选择器统一管,不在这道闸的射程里。把它们算进来只会逼着往 CSS
+    里塞空规则去糊弄检查。
+    """
     used: set[str] = set()
     for page in pages:
-        for attr in HTML_CLASS.findall(page.read_text(encoding="utf-8")):
-            used.update(c for c in attr.split() if c.startswith("org-"))
+        html = page.read_text(encoding="utf-8")
+        for block in PRE_BLOCK.findall(html):
+            for attr in HTML_CLASS.findall(block):
+                used.update(c for c in attr.split() if c.startswith("org-"))
 
     styled: set[str] = set()
     for sheet in sorted(CSS_DIR.glob("*.css")):

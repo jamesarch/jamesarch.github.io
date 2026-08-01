@@ -1,5 +1,6 @@
 #+TITLE: 使用suricata屏蔽APP
 #+DATE: 2022-05-05
+#+DESCRIPTION: 用 suricata 的 IPS 模式配合 NFQUEUE 拦截指定 APP 的流量:安装、iptables 规则、自定义 drop 规则,以及在 hyper-v 大规模环境下遇到的性能问题。
 * 原理
 suricata是一套IDS/IPS系统，因为需要实现一个拦截的功能，这里就需要使用到IPS模式，利用IPS来过滤数据包，从而实现拦截的方法。
 * 具体操作

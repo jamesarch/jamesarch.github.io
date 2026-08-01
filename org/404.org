@@ -1,0 +1,7 @@
+#+TITLE: 页面不存在
+#+DESCRIPTION: 404 —— 请求的页面不存在。
+
+要找的页面不在这里。
+
+- 回到 [[file:index.org][文章列表]]
+- 或者看看 [[file:about.org][关于]]

@@ -1,0 +1,18 @@
+#+TITLE: 关于
+#+NAV: 20 关于
+#+DESCRIPTION: 关于这个博客,以及它是怎么构建的。
+
+写点网络、流量分析和运维方向的东西。
+
+* 联系
+- GitHub: [[https://github.com/jamesarch][jamesarch]]
+- Email: [[mailto:han.shan@live.cn][han.shan@live.cn]]
+
+* 这个站怎么来的
+源文件是 org,由 Emacs 的 =org-publish= 导出成静态 HTML,托管在 GitHub Pages。
+仓库在 [[https://github.com/jamesarch/jamesarch.github.io][jamesarch/jamesarch.github.io]]。
+
+构建是确定性的:同一份 org 在任何机器上产出逐字节相同的 HTML,CI 用
+=git diff --exit-code= 就能校验产物与源同步。代码块的配色取自
+[[https://github.com/doomemacs/themes][doom-themes]] 的 doom-one 与 doom-one-light,
+跟随系统深浅色切换。

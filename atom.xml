@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
+  <title>Jamesarch</title>
+  <subtitle>网络、流量分析与运维笔记。</subtitle>
+  <link href="https://jamesarch.github.io/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://jamesarch.github.io/" rel="alternate" type="text/html"/>
+  <id>https://jamesarch.github.io/</id>
+  <updated>2022-05-05T00:00:00Z</updated>
+  <author><name>jamesarch</name></author>
+  <entry>
+    <title>使用suricata屏蔽APP</title>
+    <link href="https://jamesarch.github.io/suricata.html" rel="alternate" type="text/html"/>
+    <id>https://jamesarch.github.io/suricata.html</id>
+    <published>2022-05-05T00:00:00Z</published>
+    <updated>2022-05-05T00:00:00Z</updated>
+    <summary>用 suricata 的 IPS 模式配合 NFQUEUE 拦截指定 APP 的流量:安装、iptables 规则、自定义 drop 规则,以及在 hyper-v 大规模环境下遇到的性能问题。</summary>
+  </entry>
+  <entry>
+    <title>屏蔽钉钉微信等APP的几种思路</title>
+    <link href="https://jamesarch.github.io/block_app.html" rel="alternate" type="text/html"/>
+    <id>https://jamesarch.github.io/block_app.html</id>
+    <published>2022-01-28T00:00:00Z</published>
+    <updated>2022-01-28T00:00:00Z</updated>
+    <summary>在 Linux 网关上屏蔽钉钉、微信等 APP 的几种做法:dnsmasq 域名重定向、iptables 按 IP 段与字符串匹配、路由黑洞、bpf 与 xdp。</summary>
+  </entry>
+  <entry>
+    <title>如何使用wireshark解密https流量</title>
+    <link href="https://jamesarch.github.io/wireshark_ssl.html" rel="alternate" type="text/html"/>
+    <id>https://jamesarch.github.io/wireshark_ssl.html</id>
+    <published>2022-01-17T00:00:00Z</published>
+    <updated>2022-01-17T00:00:00Z</updated>
+    <summary>通过 SSLKEYLOGFILE 环境变量导出 TLS 会话密钥,让 wireshark 解密 https 流量。含 windows / Linux / macOS 三种设置方式。</summary>
+  </entry>
+</feed>

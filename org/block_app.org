@@ -1,5 +1,6 @@
 #+TITLE: 屏蔽钉钉微信等APP的几种思路
 #+DATE: 2022-01-28
+#+DESCRIPTION: 在 Linux 网关上屏蔽钉钉、微信等 APP 的几种做法:dnsmasq 域名重定向、iptables 按 IP 段与字符串匹配、路由黑洞、bpf 与 xdp。
 #+OPTIONS: ^:nil
 * 背景
 最近因业务需求要屏蔽指定APP的登录，在这中间走了不少弯路，在此记录下。

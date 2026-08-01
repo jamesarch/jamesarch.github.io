@@ -22,17 +22,21 @@ emacs-version:
 build: emacs-version
 	$(EMACS) -Q --batch -l publish.el --funcall blog-publish
 
-## 校验提交的 HTML 与 org 源同步。构建是确定性的,所以这里可以硬要求零 diff。
+## 校验提交的产物与 org 源同步。构建是确定性的,所以这里可以硬要求零 diff。
 ## 两道闸缺一不可:git diff 看不见 untracked 文件,只查它的话,新增一篇文章却忘了
 ## 提交 HTML 时 CI 会绿灯放行,而 Pages 上那页是 404 —— 恰好是最常走的路径。
+## 范围不能只有 *.html:feed 和 sitemap 同样是构建产物,漏掉它们就会出现
+## "页面更新了而 feed 停在上一版"却全绿的情况。
+ARTIFACTS := '*.html' atom.xml sitemap.xml robots.txt
+
 check: build
-	@untracked=$$(git ls-files --others --exclude-standard -- '*.html'); \
+	@untracked=$$(git ls-files --others --exclude-standard -- $(ARTIFACTS)); \
 	if [ -n "$$untracked" ]; then \
-	  echo "有构建出来但没提交的 HTML: $$untracked"; exit 1; \
+	  echo "有构建出来但没提交的产物: $$untracked"; exit 1; \
 	fi
-	@git diff --exit-code -- '*.html' \
-	  || { echo "HTML 与 org 源不同步,请提交 make build 的产物"; exit 1; }
-	@echo "HTML 与 org 源一致"
+	@git diff --exit-code -- $(ARTIFACTS) \
+	  || { echo "产物与 org 源不同步,请提交 make build 的结果"; exit 1; }
+	@echo "产物与 org 源一致"
 
 ## 产物完整性:站内引用不断链 + 每个 token class 都有样式规则。
 verify: build

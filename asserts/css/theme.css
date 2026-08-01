@@ -96,18 +96,72 @@ body {
 
 /* ── 导航与容器 ───────────────────────────────────────────────────── */
 
-/* org 输出的 UP | HOME。右上角,等宽小字,不做粘性 */
-#org-div-home-and-up {
+/* 键盘用户的第一个可聚焦元素。平时藏在视口外,拿到焦点才出现 ——
+   不用 display:none,那样屏幕阅读器和 Tab 都够不着。 */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: .5em 1em;
+  background: var(--code-bg);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: .875rem;
+  border: 1px solid var(--border);
+  border-radius: 0 0 4px 0;
+  z-index: 10;
+}
+.skip-link:focus { left: 0; }
+
+/* 平铺、无下拉、无汉堡。隐藏式菜单会让任务完成率下降(NN/g 的数据是 21%),
+   而这个站总共三五个入口,没有藏起来的理由。也不做粘性 —— 作者关掉了
+   lsp-ui 的所有自动面板,粘在视口上的东西不符合这个偏好。 */
+#site-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
   max-width: var(--measure);
   margin: 0 auto;
   padding: var(--step) 0 0;
-  text-align: right;
   font-family: var(--mono);
   font-size: .8125rem;
-  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: .7rem;
 }
-#org-div-home-and-up a { color: var(--muted); text-decoration: none; }
-#org-div-home-and-up a:hover { color: var(--accent); }
+
+#site-nav .brand {
+  font-size: .9375rem;
+  font-weight: 600;
+  color: var(--fg);
+  text-decoration: none;
+  /* 站名占住左边,其余项推到右侧 */
+  margin-right: auto;
+}
+#site-nav .brand:hover { color: var(--accent); }
+
+#site-nav ul {
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#site-nav li { margin: 0; }
+
+#site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding-bottom: .2em;
+  border-bottom: 1px solid transparent;
+}
+#site-nav a:hover { color: var(--fg); border-bottom-color: var(--border); }
+
+/* 当前页。用 aria-current 做钩子而不是额外加 class:同一个属性既是无障碍
+   语义又是样式选择器,不会出现"改了 class 忘了改 aria"的两份真相。 */
+#site-nav a[aria-current="page"] {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
 
 #content {
   max-width: var(--measure);
@@ -287,19 +341,45 @@ pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 #table-of-contents a { color: var(--fg); text-decoration: none; }
 #table-of-contents a:hover { color: var(--accent); }
 
-/* ── 首页索引 ─────────────────────────────────────────────────────── */
+/* ── 首页文章列表 ─────────────────────────────────────────────────── */
 
-/* index.org 是一份文章清单。等宽 + 前导箭头,读起来像目录而不是正文列表。 */
-#content > ul.org-ul {
-  padding-left: 0;
+/* 由 site.el 按 #+DATE 倒序生成。日期用等宽定宽列 —— 等宽保证不同日期的数字
+   竖着对齐,扫一眼就能看出时间线;标题用正文字体,是这一列的主角。 */
+.post-list {
+  margin: 0;
+  padding: 0;
   list-style: none;
-  font-family: var(--mono);
-  font-size: .9375rem;
 }
-#content > ul.org-ul > li { margin: .5em 0; }
-#content > ul.org-ul > li::before { content: "→ "; color: var(--faint); }
-#content > ul.org-ul > li > a { text-decoration: none; }
-#content > ul.org-ul > li > a:hover { text-decoration: underline; }
+
+.post-list li {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin: 0;
+  padding: .55rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.post-list li:last-child { border-bottom: 0; }
+
+.post-list time {
+  flex: none;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.post-list a {
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.post-list a:hover { border-bottom-color: var(--accent); }
+
+/* 窄屏放不下两列,日期换到标题上方 */
+@media (max-width: 30rem) {
+  .post-list li { flex-direction: column; gap: .15rem; }
+}
 
 /* ── 图片 ─────────────────────────────────────────────────────────── */
 
@@ -348,7 +428,7 @@ th { font-weight: 600; color: var(--muted); font-size: .8125rem; letter-spacing:
     --bg: #fff; --fg: #000; --muted: #555; --border: #bbb;
     --code-bg: #f7f7f7; --code-fg: #000;
   }
-  #org-div-home-and-up, #table-of-contents { display: none; }
+  #site-nav, .skip-link, #table-of-contents { display: none; }
   body { font-size: 11pt; }
   pre { break-inside: avoid; white-space: pre-wrap; overflow-wrap: anywhere; }
   a { text-decoration: none; }

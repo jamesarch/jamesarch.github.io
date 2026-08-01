@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 终端提示符。深浅两套色跟随系统,和站点主题同源(doom-one / doom-one-light)。 -->
+  <style>
+    .bg { fill: #282c34 }
+    .fg { stroke: #51afef }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #fafafa }
+      .fg { stroke: #4078f2 }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="6"/>
+  <g class="fg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 11l5 5-5 5"/>
+    <path d="M17 21h7"/>
+  </g>
+</svg>

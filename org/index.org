@@ -1,9 +1,9 @@
 #+TITLE: Jamesarch
-# 首页上 UP 和 HOME 都指向自己。两个都置空,ox-html 就不生成
-# #org-div-home-and-up 这个 div —— 比生成了再用 CSS 藏干净。
-#+HTML_LINK_UP:
-#+HTML_LINK_HOME:
+#+NAV: 10 文章
+#+DESCRIPTION: 网络、流量分析与运维笔记。
 
-- [[file:suricata.org][使用suricata屏蔽APP]]
-- [[file:wireshark_ssl.org][如何使用wireshark解密https流量]]
-- [[file:block_app.org][屏蔽钉钉微信等APP的几种思路]]
+# 下面这个标记会被 site.el 的 filter 换成按日期倒序的文章列表。
+# 这样新增文章只要写 org,不用回来改首页 —— 手维护的清单迟早会漏。
+#+BEGIN_EXPORT html
+<!--ARTICLE-LIST-->
+#+END_EXPORT
