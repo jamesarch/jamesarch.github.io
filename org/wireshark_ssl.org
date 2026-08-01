@@ -24,7 +24,7 @@ open -a firefox
 之后可以通过 在过滤栏输入
 : tls and (http or http2)
 查看过滤结果 如下图所示
-#+ATTR_HTML: :alt wireshark 解密后的 https 流量,过滤器为 tls and (http or http2)
+#+ATTR_HTML: :alt 上半是终端里 curl -LI https://google.com 的响应头,下半是 wireshark 用 tls and (http or http2) 过滤后解密出的 HTTP2 帧,选中的第 674 号包是 301 Moved Permanently,与 curl 的输出对应
 [[./asserts/img/wireshark.png]]
 
 参考链接

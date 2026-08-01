@@ -112,7 +112,7 @@ tls and (http or http2)
 </p>
 
 <figure id="org000000a">
-<img src="./asserts/img/wireshark.png" alt="wireshark 解密后的 https 流量,过滤器为 tls and (http or http2)">
+<img src="./asserts/img/wireshark.png" alt="上半是终端里 curl -LI https://google.com 的响应头,下半是 wireshark 用 tls and (http or http2) 过滤后解密出的 HTTP2 帧,选中的第 674 号包是 301 Moved Permanently,与 curl 的输出对应">
 
 </figure>
 
