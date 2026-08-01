@@ -80,5 +80,6 @@ htmlize 于是输出不带颜色的 `<span>`。加载主题包也救不了 —�
 
 ## 域名
 
-`CNAME` 里的 `lefix.me` 已过期,站点当前只能通过 `jamesarch.github.io` 访问。
-换域名或续期后改 `CNAME` 即可。
+`CNAME` 指定了自定义域名 `lefix.me`,该域名已过期。只要这个文件还在,Pages 就会把
+`https://jamesarch.github.io/` 301 到 `http://lefix.me/`(实测如此),所以线上两个地址
+目前都打不开 —— 不是"还能用 github.io 顶着"。续期,或删掉 `CNAME` 让 github.io 直接生效。
