@@ -27,13 +27,10 @@
 ;; 而 htmlize 就是单个文件。
 (load (expand-file-name "lib/htmlize.el" blog-root) nil t)
 
-;; 配色。batch Emacs 没有图形帧,font-lock face 的 :foreground 全是 unspecified,
-;; htmlize 于是输出不带颜色的 <span>;加载主题包也救不了,主题 spec 带
-;; `((class color) (min-colors …))' 条件,tty 帧同样不匹配。
-;; lib/doom-one-faces.el 是从本机 Doom 的 doom-themes 里把求值后的 GUI 配色导出来
-;; 的一张表(见 scripts/gen-faces.el),用 face-override-spec 无条件套上。
-;; 生成物进仓库,构建就不依赖谁装了 Doom —— 发布产物的配色是仓库的一部分。
-(load (expand-file-name "lib/doom-one-faces.el" blog-root) nil t)
+;; 注意这里不再往 face 上套颜色。htmlize 在 `css' 输出模式下只按 face 名生成
+;; class,压根不读 :foreground —— batch 无图形帧导致颜色 unspecified 这件事
+;; 对产物没有影响了。颜色改由 asserts/css/code.css 提供(make code-css 生成),
+;; 这样同一份 HTML 能跟着系统在深浅两套配色之间切,inline-css 模式做不到。
 
 ;; org-src 起 sh-mode 时方言取自 $SHELL(本机 zsh、CI 多半 bash/sh),而 sh/bash/zsh
 ;; 三套 keywords 与 builtins 表不同,同一段代码会着出不同的色。钉成 bash。
@@ -75,13 +72,19 @@
       org-html-validation-link nil
       org-html-doctype "html5"
       org-html-html5-fancy t
-      org-html-head-include-default-style t
+      ;; 不要 org 自带的那 190 行内联 <style>:它会和主题打特异性架,
+      ;; 而且每页重复一遍。排版全部由 asserts/css/ 下的两张表接管。
+      org-html-head-include-default-style nil
       org-html-head-include-scripts nil
-      org-html-htmlize-output-type 'inline-css
-      ;; 排版主题。2023 年那批 HTML 引的是 gongzhitaao.org 的外链,
-      ;; 已 vendored 到 asserts/css/org.css —— 第三方主机哪天没了页面不会变裸样式。
+      ;; css 模式让 htmlize 输出 <span class="org-keyword">,颜色进样式表 ——
+      ;; 这样才能跟着系统深浅色切换;inline-css 的内联 style 顶不掉。
+      org-html-htmlize-output-type 'css
       org-html-head
-      "<link rel=\"stylesheet\" type=\"text/css\" href=\"./asserts/css/org.css\"/>"
+      (concat
+       "<link rel=\"stylesheet\" href=\"./asserts/css/code.css\"/>\n"
+       "<link rel=\"stylesheet\" href=\"./asserts/css/theme.css\"/>\n"
+       ;; 深色底,让浏览器把表单控件与滚动条也切过去
+       "<meta name=\"color-scheme\" content=\"dark light\"/>")
       org-html-link-up "index.html"
       org-html-link-home "index.html")
 

@@ -1,0 +1,356 @@
+/* theme.css --- jamesarch.github.io
+ *
+ * 设计取向:把 Doom Emacs 里的信息层级搬到网页,而不是做"终端风"装饰。
+ * 依据来自作者的实际配置与内容 ——
+ *   · doom-theme 是 doom-one,所以深色是默认态,浅色跟随系统;
+ *   · lsp-ui 的 sideline 与 doc 都被关掉(改用 K 主动看),说明不要自动冒出来的
+ *     东西:无浮动目录、无 hover 卡片、无滚动动画、无粘性 header;
+ *   · 3 篇文章 17 个源码块,代码是主角 —— 它是页面上唯一比底色亮的区域;
+ *   · 正文中英混排且不加空格,行宽按中文字数定。
+ *
+ * 页面配色取自 doom-one / doom-one-light 的调色板;代码块内的 token 色由
+ * asserts/css/code.css 提供(make code-css 从同两个主题生成,带对比度兜底)。
+ */
+
+/* ── 变量 ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* doom-one */
+  --bg:        #21242b;  /* bg-alt,比代码块暗一档 */
+  --fg:        #bbc2cf;
+  --muted:     #6f757a;  /* base5 提亮到 3:1,与 code.css 里的注释色同值 */
+  --border:    #3f444a;  /* base4 */
+  --accent:    #51afef;  /* blue */
+  --accent-2:  #c678dd;  /* magenta */
+  --literal:   #98be65;  /* green,行内代码 */
+  --selection: #2257A0;  /* dark-blue */
+  --on-select: #ffffff;
+
+  --sans: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Noto Sans SC", "Source Han Sans SC", sans-serif;
+  /* Maple Mono 是作者本机的编辑器字体,访客机上没有就退到系统等宽。
+     不自托管 woff2:一份中文等宽 20MB+,为几个代码块不值。 */
+  --mono: "Maple Mono NF CN", "Maple Mono", ui-monospace, SFMono-Regular,
+          "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --measure: 42rem;      /* 中文约 38 字/行 */
+  --step:    1.5rem;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* doom-one-light */
+    --bg:        #f0f0f0;
+    --fg:        #383a42;
+    --muted:     #8c9094;
+    --border:    #c6c7c7;
+    --accent:    #4078f2;
+    --accent-2:  #a626a4;
+    --literal:   #50a14f;
+    --selection: #a0bcf8;
+    --on-select: #1b2229;
+  }
+}
+
+/* ── 基础 ─────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* 中日韩与西文之间自动留间隙,省得在 org 源里手敲空格 */
+  text-spacing-trim: space-first;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0 var(--step) calc(var(--step) * 3);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--selection); color: var(--on-select); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── 导航与容器 ───────────────────────────────────────────────────── */
+
+/* org 输出的 UP | HOME。右上角,等宽小字,不做粘性 */
+#org-div-home-and-up {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--step) 0 0;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  color: var(--muted);
+}
+#org-div-home-and-up a { color: var(--muted); text-decoration: none; }
+#org-div-home-and-up a:hover { color: var(--accent); }
+
+#content {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding-top: calc(var(--step) * 1.5);
+}
+
+/* ── 标题 ─────────────────────────────────────────────────────────── */
+
+h1.title {
+  margin: 0 0 calc(var(--step) * 1.5);
+  font-size: 1.75rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+h2, h3, h4, h5, h6 {
+  margin: calc(var(--step) * 2) 0 .6em;
+  line-height: 1.45;
+  font-weight: 600;
+  scroll-margin-top: var(--step);
+}
+
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; }
+h5, h6 { font-size: .9375rem; }
+
+/* 层级用 org 源里的星号数表达,不靠颜色也不靠色条 —— 颜色全留给代码。
+   顺带也告诉读者这篇是 org 写的。 */
+h2::before, h3::before, h4::before {
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--muted);
+}
+h2::before { content: "## "; }
+h3::before { content: "### "; }
+h4::before { content: "#### "; }
+
+/* ── 正文 ─────────────────────────────────────────────────────────── */
+
+p { margin: 0 0 1.1em; }
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+a:hover { text-decoration-color: var(--accent); }
+
+strong { font-weight: 600; }
+em { font-style: normal; color: var(--accent-2); }  /* 中文斜体难看,改用颜色 */
+
+ul, ol { margin: 0 0 1.1em; padding-left: 1.4em; }
+li { margin: .3em 0; }
+li::marker { color: var(--muted); }
+
+hr { margin: calc(var(--step) * 2) 0; border: 0; border-top: 1px solid var(--border); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: .2em 0 .2em 1em;
+  border-left: 2px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── 行内代码 ─────────────────────────────────────────────────────── */
+
+code {
+  font-family: var(--mono);
+  font-size: .875em;
+  color: var(--literal);
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  padding: .1em .35em;
+  border-radius: 3px;
+}
+
+/* ── 代码块 ───────────────────────────────────────────────────────── */
+
+/* 代码块是页面上唯一比底色亮的区域,视线自然落上去。
+   --code-bg / --code-fg 由 code.css 提供,与 token 色同源。
+   注意 pre.example 没有 .org-src-container 外层(只有 pre.src 才有),
+   所以样式挂在 pre 上而不是容器上,否则示例块会掉回浏览器默认白底。 */
+.org-src-container { position: relative; margin: 1.4em 0; }
+
+pre {
+  margin: 1.4em 0;
+  padding: 1em 1.1em;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  line-height: 1.65;
+  /* 命令和配置片段横着滚,不折行 —— 折行会让长 iptables 命令读不出结构 */
+  overflow-x: auto;
+  overflow-wrap: normal;
+  tab-size: 4;
+}
+
+.org-src-container > pre { margin: 0; }
+
+pre code {
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* 语言标签。org 把语言编进 class(src-shell / src-conf / …),CSS 取不出
+   attr 的子串,只能穷举 —— 覆盖作者写过的和大概率会写的。 */
+pre.src::before {
+  position: absolute;
+  top: 0;
+  right: .7em;
+  transform: translateY(-50%);
+  padding: 0 .5em;
+  background: var(--bg);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .04em;
+}
+pre.src-shell::before       { content: "shell"; }
+pre.src-bash::before        { content: "bash"; }
+pre.src-zsh::before         { content: "zsh"; }
+pre.src-conf::before        { content: "conf"; }
+pre.src-bat::before         { content: "bat"; }
+pre.src-rust::before        { content: "rust"; }
+pre.src-python::before      { content: "python"; }
+pre.src-js::before          { content: "js"; }
+pre.src-ts::before          { content: "ts"; }
+pre.src-json::before        { content: "json"; }
+pre.src-yaml::before        { content: "yaml"; }
+pre.src-toml::before        { content: "toml"; }
+pre.src-sql::before         { content: "sql"; }
+pre.src-go::before          { content: "go"; }
+pre.src-c::before           { content: "c"; }
+pre.src-cpp::before         { content: "c++"; }
+pre.src-nginx::before       { content: "nginx"; }
+pre.src-dockerfile::before  { content: "dockerfile"; }
+pre.src-diff::before        { content: "diff"; }
+pre.src-makefile::before    { content: "make"; }
+pre.src-emacs-lisp::before  { content: "elisp"; }
+pre.src-org::before         { content: "org"; }
+
+/* 无语言的固定宽度块(#+begin_example 和 ": " 行)。底色直接用页面底 —— 深浅两套
+   下它都比代码块暗一档,视觉上"凹下去",跟带标签的源码块拉开层次。
+   之前用 color-mix 混 --code-bg 与 --bg,浅色方案里两者只差 10 点亮度,
+   混出来几乎和源码块同色,根本区分不出来。 */
+pre.example {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* 细滚动条,不抢视线 */
+pre { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+pre::-webkit-scrollbar { height: 8px; }
+pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── 目录 ─────────────────────────────────────────────────────────── */
+
+/* 不做浮动侧栏:作者把 lsp-ui 的 sideline 和 doc 都关了,不喜欢自动出现的面板。
+   目录老实待在正文顶部。 */
+#table-of-contents {
+  margin: 0 0 calc(var(--step) * 2);
+  padding: .9em 1.1em;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  line-height: 1.7;
+}
+
+#table-of-contents h2 {
+  margin: 0 0 .5em;
+  font-size: .75rem;
+  font-weight: 400;
+  /* 不给中文加字距,"目录"两个字会被拉散 */
+  color: var(--muted);
+}
+#table-of-contents h2::before { content: none; }
+
+#table-of-contents ul { margin: 0; padding-left: 1.2em; list-style: none; }
+#text-table-of-contents > ul { padding-left: 0; }
+#table-of-contents li { margin: .15em 0; }
+#table-of-contents a { color: var(--fg); text-decoration: none; }
+#table-of-contents a:hover { color: var(--accent); }
+
+/* ── 首页索引 ─────────────────────────────────────────────────────── */
+
+/* index.org 是一份文章清单。等宽 + 前导箭头,读起来像目录而不是正文列表。 */
+#content > ul.org-ul {
+  padding-left: 0;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: .9375rem;
+}
+#content > ul.org-ul > li { margin: .5em 0; }
+#content > ul.org-ul > li::before { content: "→ "; color: var(--muted); }
+#content > ul.org-ul > li > a { text-decoration: none; }
+#content > ul.org-ul > li > a:hover { text-decoration: underline; }
+
+/* ── 图片 ─────────────────────────────────────────────────────────── */
+
+img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 4px; }
+
+figure { margin: 1.6em 0; }
+figcaption {
+  margin-top: .5em;
+  font-size: .8125rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── 表格 ─────────────────────────────────────────────────────────── */
+
+table { width: 100%; margin: 1.4em 0; border-collapse: collapse; font-size: .9375rem; }
+th, td { padding: .45em .7em; border-bottom: 1px solid var(--border); text-align: left; }
+th { font-weight: 600; color: var(--muted); font-size: .8125rem; letter-spacing: .03em; }
+
+/* ── 页脚 ─────────────────────────────────────────────────────────── */
+
+#postamble {
+  max-width: var(--measure);
+  margin: calc(var(--step) * 3) auto 0;
+  padding-top: var(--step);
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--muted);
+}
+#postamble p { margin: .2em 0; }
+
+/* ── 窄屏 ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 40rem) {
+  body { font-size: 15px; padding: 0 1rem calc(var(--step) * 2); }
+  h1.title { font-size: 1.4rem; }
+  h2 { font-size: 1.15rem; }
+  pre { font-size: .75rem; padding: .8em .9em; }
+  /* 窄屏下 ## 前缀挤占标题宽度,收掉 */
+  h2::before, h3::before, h4::before { content: none; }
+}
+
+/* ── 打印 ─────────────────────────────────────────────────────────── */
+
+@media print {
+  :root {
+    --bg: #fff; --fg: #000; --muted: #555; --border: #bbb;
+    --code-bg: #f7f7f7; --code-fg: #000;
+  }
+  #org-div-home-and-up, #table-of-contents { display: none; }
+  body { font-size: 11pt; }
+  pre { break-inside: avoid; white-space: pre-wrap; overflow-wrap: anywhere; }
+  a { text-decoration: none; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .85em; color: #555; }
+}

@@ -1,0 +1,70 @@
+/* code.css --- 代码块语法高亮
+ *
+ * 由 `make code-css' 从本机 Doom 的 doom-themes 生成,不要手改。
+ * 生成脚本与背景说明见 scripts/gen-code-css.el。
+ * 深色 doom-one / 浅色 doom-one-light   Emacs 30.2   对比度下限 3.0:1
+ */
+
+/* doom-one —— 底色 #282c34 */
+/* 提亮至 3.0:1: comment-delimiter comment */
+:root{--code-bg:#282c34;--code-fg:#bbc2cf}
+.org-bracket{color:#a0bdd7}
+.org-builtin{color:#c678dd}
+.org-comment-delimiter{color:#6f757a}
+.org-comment{color:#6f757a}
+.org-constant{color:#a9a1e1}
+.org-delimiter{color:#a0bdd7}
+.org-doc{color:#83898d}
+.org-escape{color:#51afef;font-weight:600}
+.org-function-call{color:#c28ed8;font-style:italic}
+.org-function-name{color:#c678dd}
+.org-keyword{color:#51afef}
+.org-misc-punctuation{color:#a0bdd7}
+.org-negation-char{color:#51afef;font-weight:600}
+.org-number{color:#da8548}
+.org-operator{color:#51afef}
+.org-preprocessor-char{color:#51afef;font-weight:600}
+.org-preprocessor{color:#51afef;font-weight:600}
+.org-property-name{color:#7bb6e2;font-weight:600}
+.org-property-use{color:#7bb6e2}
+.org-punctuation{color:#a0bdd7}
+.org-regexp-grouping-backslash{color:#51afef;font-weight:600}
+.org-regexp-grouping-construct{color:#51afef;font-weight:600}
+.org-string{color:#98be65}
+.org-type{color:#ECBE7B}
+.org-variable-name{color:#dcaeea}
+.org-variable-use{color:#cbb8dc}
+.org-warning{color:#ECBE7B}
+
+/* doom-one-light —— 底色 #fafafa */
+/* 提亮至 3.0:1: comment-delimiter comment number */
+@media (prefers-color-scheme: light) {
+  :root{--code-bg:#fafafa;--code-fg:#383a42}
+  .org-bracket{color:#3a496e}
+  .org-builtin{color:#a626a4}
+  .org-comment-delimiter{color:#8c9094}
+  .org-comment{color:#8c9094}
+  .org-constant{color:#b751b6}
+  .org-delimiter{color:#3a496e}
+  .org-doc{color:#84888b;font-style:italic}
+  .org-escape{color:#4078f2;font-weight:600}
+  .org-function-call{color:#852c86;font-style:italic}
+  .org-function-name{color:#a626a4}
+  .org-keyword{color:#e45649}
+  .org-misc-punctuation{color:#3a496e}
+  .org-negation-char{color:#4078f2;font-weight:600}
+  .org-number{color:#cd7d44}
+  .org-operator{color:#4078f2}
+  .org-preprocessor-char{color:#4078f2;font-weight:600}
+  .org-preprocessor{color:#4078f2;font-weight:600}
+  .org-property-name{color:#9f4a46;font-weight:600}
+  .org-property-use{color:#9f4a46}
+  .org-punctuation{color:#3a496e}
+  .org-regexp-grouping-backslash{color:#4078f2;font-weight:600}
+  .org-regexp-grouping-construct{color:#4078f2;font-weight:600}
+  .org-string{color:#50a14f}
+  .org-type{color:#986801}
+  .org-variable-name{color:#6a1868}
+  .org-variable-use{color:#512855}
+  .org-warning{color:#986801}
+}

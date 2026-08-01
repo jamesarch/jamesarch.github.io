@@ -19,7 +19,7 @@ jobs:
           version: '30.2'
 
       - name: 站内引用无断链
-        run: make links
+        run: make verify
 
       # 构建是确定性的,所以这里能硬要求零 diff。失败通常意味着改了 org 却忘了
       # 提交 make build 的产物 —— Pages 发布的是仓库里的 HTML,不重建就不会上线。

@@ -1,4 +1,8 @@
 #+TITLE: Jamesarch
+# 首页上 UP 和 HOME 都指向自己。两个都置空,ox-html 就不生成
+# #org-div-home-and-up 这个 div —— 比生成了再用 CSS 藏干净。
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
 
 - [[file:suricata.org][使用suricata屏蔽APP]]
 - [[file:wireshark_ssl.org][如何使用wireshark解密https流量]]

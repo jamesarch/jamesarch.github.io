@@ -5,16 +5,16 @@ Org mode 写作、导出成静态 HTML、由 GitHub Pages 直接托管的博客�
 ## 仓库结构
 
 ```
-org/                 文章源文件,唯一需要手写的地方
-  index.org          首页目录,新增文章要在这里加一行链接
-*.html               org 导出的产物,提交进仓库 —— Pages 发布的就是它们
-asserts/img/         文章插图
-asserts/css/org.css  排版主题(vendored,见下)
-publish.el           导出配置,构建的唯一事实来源
-lib/htmlize.el       源码高亮(vendored)
-lib/doom-one-faces.el  配色表,由 make faces 从本机 Doom 生成
-scripts/gen-faces.el   上面那张表的生成脚本
-scripts/check-links.py 站内引用断链检查
+org/                    文章源文件,唯一需要手写的地方
+  index.org             首页目录,新增文章要在这里加一行链接
+*.html                  org 导出的产物,提交进仓库 —— Pages 发布的就是它们
+asserts/img/            文章插图
+asserts/css/theme.css   主题:排版、配色、布局
+asserts/css/code.css    代码高亮,由 make code-css 从本机 Doom 生成
+publish.el              导出配置,构建的唯一事实来源
+lib/htmlize.el          源码高亮(vendored)
+scripts/gen-code-css.el 上面那张高亮表的生成脚本
+scripts/check-output.py 产物完整性检查
 ```
 
 ## 日常操作
@@ -22,32 +22,35 @@ scripts/check-links.py 站内引用断链检查
 需要 Emacs 30.2(`brew install emacs`)和 python3,不需要装任何 Emacs 包。
 
 ```sh
-make build    # 重建全部 HTML
-make serve    # 构建后起 http://localhost:8000/ 预览
-make links    # 检查站内引用没有断链
-make check    # 校验提交的 HTML 与 org 源同步(CI 跑的就是它)
-make faces    # 从本机 Doom 重新导出配色表,换主题时才需要
+make build      # 重建全部 HTML
+make serve      # 构建后起 http://localhost:8000/ 预览
+make verify     # 产物完整性:站内引用不断链 + 每个 token class 都有样式
+make check      # 校验提交的 HTML 与 org 源同步(CI 跑的就是它)
+make code-css   # 从本机 Doom 重新生成高亮样式,换主题时才需要
 ```
 
-在 Doom Emacs 里用 `M-x +blog/publish`(构建 + 断链检查)、`M-x +blog/serve`(预览)、
+在 Doom Emacs 里用 `M-x +blog/publish`(构建 + 完整性检查)、`M-x +blog/serve`(预览)、
 `M-x +blog/find-file`(跳到 `org/`),定义在 `~/.config/doom/config.el`。它们走的是
 子进程里的同一套 make,**不是** `org-publish` —— 交互路径和 batch 路径分叉的话,
-上面那条零 diff 不变式就没人守了。
+下面那条零 diff 不变式就没人守了。
 
 ## 写一篇新文章
 
 1. 在 `org/` 下新建 `foo.org`,开头写 `#+TITLE:` 和 `#+DATE:`;
 2. 在 `org/index.org` 里加一行 `- [[file:foo.org][标题]]`;
-3. `make build && make links`;
+3. `make verify`;
 4. 把 `foo.html`、`index.html` 和 org 源一起提交。
 
 **产物必须和源一起提交** —— Pages 发布的是仓库里的 HTML,不是 CI 现构建的。忘了重建的话
-CI 的 `make check` 会拦下来。
+CI 的 `make check` 会拦下来(它同时查 `git diff` 和 untracked,新增文章漏提交 HTML 也拦)。
+
+代码块记得写语言(`#+begin_src shell`)。不写会导出成 `src-nil`,既没有高亮也没有语言标签;
+纯粹的示例文本用 `#+begin_example`。
 
 ## 构建为什么是确定性的
 
-同一份 org 在任何机器上都产出逐字节相同的 HTML。这不是自然结果,org 默认有三处非确定性,
-`publish.el` 逐个消掉了:
+同一份 org 在任何机器上都产出逐字节相同的 HTML —— macOS 本地与 Ubuntu CI 上重建的产物
+`git diff` 为空。这不是自然结果,org 默认有三处非确定性,`publish.el` 逐个消掉了:
 
 | 非确定性 | 默认行为 | 处理 |
 | --- | --- | --- |
@@ -57,29 +60,48 @@ CI 的 `make check` 会拦下来。
 
 外加:`org-publish` 的缓存会复用上次的锚点(于是"有缓存"和"无缓存"产出不同),构建前清掉;
 `sh-mode` 的方言取自 `$SHELL`(本机 zsh、CI 多半 bash),不同方言的关键字表不同会着出不同的
-色,钉成 bash。
+色,钉成 bash;Makefile 断言 Emacs 版本,用错版本立刻失败而不是静默产出不同 HTML。
 
 有了这些,`make check` 才能是朴素的 `git diff --exit-code`,而不用为一行时间戳写过滤特例。
 
-## 为什么 htmlize 和配色表在仓库里
+## 主题
 
-**htmlize**:提供源码块语法高亮。缺了它 org 只在 stderr 打一行 warning 就静默降级成纯文本 ——
-产物少掉所有颜色而构建照样是绿的。本机 Doom 里其实装了同一份(`build-30.2/htmlize`),但构建
-不该依赖用户装没装 Doom、装的哪个版本,所以 vendored 一份进 `lib/`。
+设计取向是**把 Doom Emacs 里的信息层级搬到网页**,不是做"终端风"装饰。几处依据:
 
-**配色表**:batch Emacs 没有图形帧,`font-lock` face 的 `:foreground` 全是 `unspecified`,
-htmlize 于是输出不带颜色的 `<span>`。加载主题包也救不了 —— 主题的 face spec 带
-`((class color) (min-colors 257))` 条件,tty 帧同样不匹配。
+- `doom-theme` 是 `doom-one`,所以深色是默认态,浅色跟随系统 —— 纯 CSS
+  `prefers-color-scheme`,零 JS;
+- 作者把 `lsp-ui` 的 sideline 和 doc 都关了(改用 `K` 主动看),所以主题里没有任何自动
+  冒出来的东西:目录不浮动、无 hover 卡片、无滚动动画、无粘性 header;
+- 3 篇文章 17 个源码块,代码是主角 —— 代码块是页面上唯一比底色亮的区域,视线自然落上去;
+- 标题层级用 `##` / `###` 前缀表达而不是颜色或色条,颜色全留给代码,顺带也告诉读者这篇是
+  org 写的;
+- 正文中英混排且不加空格,所以行宽按中文字数定(约 38 字/行),字间距靠
+  `text-spacing-trim` 自动处理。
 
-`make faces` 从本机 Doom 的 doom-themes 里把**求值后**的 GUI 配色导出成
-`lib/doom-one-faces.el`(1262 个 face),构建时用 `face-override-spec` 无条件套上。配色因此
-和作者在 Doom 里看到的完全一致,而发布产物又不跟着谁的编辑器主题漂移。生成脚本带断言:
-几个从线上 HTML 核对过的锚点色对不上就直接失败,不让"静默丢色"溜过去。
+字体上,`Maple Mono NF CN` 是作者本机的编辑器字体,访客机上没有就退到系统等宽 —— 不自托管
+woff2,一份中文等宽 20MB+,为几个代码块不值。
 
-## 排版主题
+## 高亮配色为什么要生成
 
-`asserts/css/org.css` 是 [orgcss](https://gongzhitaao.org/orgcss/) 的本地副本。原先是外链,
-第三方主机哪天没了整站就变裸样式,所以 vendored。
+`asserts/css/code.css` 由 `make code-css` 从本机 Doom 的 doom-themes 导出:深色取
+`doom-one`、浅色取 `doom-one-light`,两套套在 `prefers-color-scheme` 里。生成物进仓库,
+构建就不依赖谁装了 Doom。
+
+绕不开的三个坑,都在 `scripts/gen-code-css.el` 里处理了:
+
+- **不能直接读 face**。batch Emacs 没有图形帧,`face-attribute` 全返回 `unspecified`;
+  加载主题也救不了,主题 spec 带 `((class color) (min-colors 257))` 条件,tty 帧匹配不上。
+  要从 `theme-settings` 里取已求值的那一档。
+- **`:inherit` 要沿链解析**。`font-lock-comment-delimiter-face` 在 doom-one 里只写
+  `(:inherit font-lock-comment-face)`,只收有 `:foreground` 的 face 会把它漏掉,结果注释的
+  `#` 和注释正文不同色 —— 肉眼几乎看不出来,`make verify` 的 class 覆盖对账能抓到。
+- **对比度要兜底**。编辑器配色搬到网页会掉可读性:注释 `#5B6268` 落在 `#282c34` 上只有
+  2.26:1,远低于 WCAG 的 3:1。这不是"线上一直这样" —— 2023 那批 HTML 是白底,同一个灰有
+  6.19:1。给代码块上深色底是设计改动,得自己把账补上,所以生成时按 3:1 提亮,并在 CSS 注释
+  里标出调过哪几个。
+
+htmlize 本身 vendored 在 `lib/`:本机 Doom 里装着同一份,但构建不该依赖用户装没装 Doom、
+装的哪个版本。缺了它 org 只在 stderr 打一行 warning 就静默降级成纯文本,exit code 照样是 0。
 
 ## 域名
 
