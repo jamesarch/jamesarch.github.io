@@ -220,6 +220,12 @@ org-publish 对每个文件调一次,所以环境的建立与还原都在单文�
          :html-link-home ""
          ;; 导航由 site.el 按各页的 #+NAV 生成,当前页带 aria-current
          :html-preamble blog-preamble
+         ;; 三个包裹层默认都是 <div>。换成 landmark 元素:屏幕阅读器可以按
+         ;; "导航 / 主要内容 / 页脚"直接跳,配合 .skip-link 就不用一路 Tab
+         ;; 穿过导航才够到正文。id 不变,CSS 选择器不受影响。
+         :html-divs ((preamble "header" "preamble")
+                     (content "main" "content")
+                     (postamble "footer" "postamble"))
          ;; feed / sitemap / robots 挂在这里而不是只写在 blog-publish 里:
          ;; 走 org-export-dispatch 的 P p 时调的是 org-publish,不经过
          ;; blog-publish —— 那样页面更新了而 feed 停在上一版,要么事后被

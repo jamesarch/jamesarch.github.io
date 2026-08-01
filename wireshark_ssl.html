@@ -22,7 +22,7 @@
 <link rel="icon" href="./asserts/img/favicon.svg" type="image/svg+xml"/>
 </head>
 <body>
-<div id="preamble" class="status">
+<header id="preamble" class="status">
 <a class="skip-link" href="#content">跳到正文</a>
 <nav id="site-nav" aria-label="站点导航">
 <a class="brand" href="index.html">Jamesarch</a>
@@ -32,21 +32,21 @@
 <li><a href="atom.xml">RSS</a></li>
 </ul>
 </nav>
-</div>
-<div id="content" class="content">
+</header>
+<main id="content" class="content">
 <header>
 <h1 class="title">如何使用wireshark解密https流量</h1>
 </header><nav id="table-of-contents" role="doc-toc">
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org000000d">如何使用wireshark解密https流量</a>
+<li><a href="#org000000e">如何使用wireshark解密https流量</a>
 <ul>
 <li><a href="#org0000001">SSLKEYLOGFILE</a>
 <ul>
 <li><a href="#org0000004">windows</a></li>
 <li><a href="#org0000007">Linux</a></li>
-<li><a href="#org000000a">macOS</a></li>
+<li><a href="#org000000b">macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -54,9 +54,9 @@
 </ul>
 </div>
 </nav>
-<div id="outline-container-org000000d" class="outline-2">
-<h2 id="org000000d">如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-org000000d">
+<div id="outline-container-org000000e" class="outline-2">
+<h2 id="org000000e">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-org000000e">
 </div>
 <div id="outline-container-org0000001" class="outline-3">
 <h3 id="org0000001">SSLKEYLOGFILE</h3>
@@ -85,9 +85,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org000000a" class="outline-4">
-<h4 id="org000000a">macOS</h4>
-<div class="outline-text-4" id="text-org000000a">
+<div id="outline-container-org000000b" class="outline-4">
+<h4 id="org000000b">macOS</h4>
+<div class="outline-text-4" id="text-org000000b">
 <div class="org-src-container">
 <pre data-lang="shell" class="src src-shell"><span class="org-builtin">export</span> <span class="org-variable-name">SSLKEYLOGFILE</span>=$<span class="org-variable-name">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -109,8 +109,12 @@ tls and (http or http2)
 
 <p>
 查看过滤结果 如下图所示
-<img src="./asserts/img/wireshark.png" alt="wireshark.png">
 </p>
+
+<figure id="org000000a">
+<img src="./asserts/img/wireshark.png" alt="wireshark 解密后的 https 流量,过滤器为 tls and (http or http2)">
+
+</figure>
 
 <p>
 参考链接
@@ -127,10 +131,10 @@ tls and (http or http2)
 </div>
 </div>
 </div>
-</div>
-<div id="postamble" class="status">
+</main>
+<footer id="postamble" class="status">
 <p class="date">&#26085;&#26399;: 2022-01-17</p>
 <p class="author">&#20316;&#32773;: jamesarch</p>
-</div>
+</footer>
 </body>
 </html>

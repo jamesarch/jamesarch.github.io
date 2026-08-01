@@ -24,6 +24,7 @@ open -a firefox
 之后可以通过 在过滤栏输入
 : tls and (http or http2)
 查看过滤结果 如下图所示
+#+ATTR_HTML: :alt wireshark 解密后的 https 流量,过滤器为 tls and (http or http2)
 [[./asserts/img/wireshark.png]]
 
 参考链接
