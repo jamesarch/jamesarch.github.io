@@ -231,9 +231,16 @@ check-output.py 按仓库根解析也全绿。"
 
 ;;; Atom feed
 
+(defconst blog-feed-limit 20
+  "feed 里最多放几条。
+
+Atom 惯例是只给最近若干条,不是全量 —— 全量的话文章涨到几百篇后 atom.xml
+会变成几百 KB,每个订阅端每次轮询都要传一遍。历史文章由 sitemap.xml 和
+首页列表负责被发现,feed 的职责是「最近更新了什么」。")
+
 (defun blog-write-feed ()
   "生成 atom.xml。"
-  (let* ((articles (blog-articles))
+  (let* ((articles (seq-take (blog-articles) blog-feed-limit))
          (updated (blog--rfc3339 (blog-latest-date)))
          (path (expand-file-name "atom.xml" blog-root)))
     (with-temp-file path
