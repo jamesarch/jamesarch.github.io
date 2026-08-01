@@ -29,7 +29,10 @@ make check    # 校验提交的 HTML 与 org 源同步(CI 跑的就是它)
 make faces    # 从本机 Doom 重新导出配色表,换主题时才需要
 ```
 
-在 Doom Emacs 里可以直接 `M-x +make/run` 选目标(`:tools make` 模块),不用切终端。
+在 Doom Emacs 里用 `M-x +blog/publish`(构建 + 断链检查)、`M-x +blog/serve`(预览)、
+`M-x +blog/find-file`(跳到 `org/`),定义在 `~/.config/doom/config.el`。它们走的是
+子进程里的同一套 make,**不是** `org-publish` —— 交互路径和 batch 路径分叉的话,
+上面那条零 diff 不变式就没人守了。
 
 ## 写一篇新文章
 
