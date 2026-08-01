@@ -51,10 +51,12 @@ CI 的 `make check` 会拦下来(它同时查 `git diff` 和 untracked,新增文
 
 高亮由 Emacs 的 major-mode 驱动,所以**任何 `emacs -Q` 认识的语言都自动上色**,
 语言角标也由导出 filter 写进 `data-lang` 后用 `content: attr(data-lang)` 显示,
-不需要为每种语言加规则。当前可用的有 shell / conf / bat / json / python / ruby /
-js / sql / c / c++ / toml / makefile / diff / emacs-lisp 等一批纯 elisp mode。
-rust、go、yaml、typescript 的 mode 不在 Emacs 内置里,写了会被闸拦下 —— 那时要么在
-`publish.el` 里映射到某个内置 mode,要么把它 vendored 进 `lib/`,像 htmlize 那样。
+不需要为每种语言加规则。站内现用的是 shell / conf / bat 三种(`grep -oh 'data-lang="[^"]*"' *.html | sort -u` 可查)。
+
+**不必查表**:写完跑一次 `make build`,不支持的语言会被闸拦下,报错里有文件行号和
+两条出路(映射到内置 mode,或 vendored 进 `lib/`)。这里不列支持清单 —— 那种手维护的
+白名单没人保证它跟 Emacs 版本和 `org-src-lang-modes` 同步,过一阵就变成假话,
+正是这轮从 `theme.css` 里删掉的那 22 条语言规则的同一个毛病。
 
 ## 构建为什么是确定性的
 
