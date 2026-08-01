@@ -18,11 +18,18 @@
   /* doom-one */
   --bg:        #21242b;  /* bg-alt,比代码块暗一档 */
   --fg:        #bbc2cf;
-  --muted:     #6f757a;  /* base5 提亮到 3:1,与 code.css 里的注释色同值 */
+  /* 两档灰,按用途分:--muted 承载文本和链接(页脚、导航、目录标题),对页面底色
+     要够 4.5:1;--faint 只做装饰(## 前缀、列表符号 → 和 marker),3:1 即可,再高
+     就抢视线了 —— 这些符号去掉也不损失信息,层级和条目本来就由字号与缩进表达。
+     语言角标不在此列:它是代码块唯一的语言标识,算文本。
+     原先两者合用一档 #6f757a,深色只有 3.33:1、浅色 2.82:1 —— 代码 token 有
+     3:1 兜底,主题自己的灰反倒没过闸。 */
+  --muted:     #868b8f;  /* 4.51:1 on --bg */
+  --faint:     #70767b;  /* 3.38:1 on --bg */
   --border:    #3f444a;  /* base4 */
   --accent:    #51afef;  /* blue */
   --accent-2:  #c678dd;  /* magenta */
-  --literal:   #98be65;  /* green,行内代码 */
+  --literal:   #98be65;  /* green,6.15:1 on 行内 code 的合成底 #2d3138 */
   --selection: #2257A0;  /* dark-blue */
   --on-select: #ffffff;
 
@@ -42,11 +49,21 @@
     /* doom-one-light */
     --bg:        #f0f0f0;
     --fg:        #383a42;
-    --muted:     #8c9094;
+    --muted:     #6b6e71;  /* 4.50:1 on --bg */
+    --faint:     #878b8f;  /* 3.01:1 on --bg */
     --border:    #c6c7c7;
-    --accent:    #4078f2;
-    --accent-2:  #a626a4;
-    --literal:   #50a14f;
+    /* 这两个是压暗过的:doom-one-light 原生 blue #4078f2 / green #50a14f 在
+       #f0f0f0 上只有 3.55:1 / 2.81:1。编辑器里它们落在 #fafafa、字号更大、
+       又有语法结构做冗余;网页上链接是交互元素、行内码常是孤立的一两个词,
+       按 WCAG AA 要 4.5:1。色相不变,只压亮度,仍是 doom-one-light 那把蓝和绿。
+       深色那档原值就过 4.5:1,不动。
+       注:code.css 里的 token 用的是 3:1 —— 那是代码块底色上的成片代码,
+       语法结构本身提供辨识冗余,和这里按元素类型分级,不是两套标准打架。 */
+    --accent:    #3868d3;  /* 4.51:1 on --bg */
+    --accent-2:  #a626a4;  /* 5.37:1,原值 */
+    /* 行内 code 有自己的 8% tint 底(合成后 #e1e1e2),不是 --bg。
+       按 --bg 算会得出 4.55:1 的乐观数,实际只有 3.97:1。 */
+    --literal:   #387037;  /* 4.54:1 on #e1e1e2 */
     --selection: #a0bcf8;
     --on-select: #1b2229;
   }
@@ -125,7 +142,7 @@ h5, h6 { font-size: .9375rem; }
 h2::before, h3::before, h4::before {
   font-family: var(--mono);
   font-weight: 400;
-  color: var(--muted);
+  color: var(--faint);
 }
 h2::before { content: "## "; }
 h3::before { content: "### "; }
@@ -149,7 +166,7 @@ em { font-style: normal; color: var(--accent-2); }  /* 中文斜体难看,改用
 
 ul, ol { margin: 0 0 1.1em; padding-left: 1.4em; }
 li { margin: .3em 0; }
-li::marker { color: var(--muted); }
+li::marker { color: var(--faint); }
 
 hr { margin: calc(var(--step) * 2) 0; border: 0; border-top: 1px solid var(--border); }
 
@@ -214,6 +231,7 @@ pre.src::before {
   transform: translateY(-50%);
   padding: 0 .5em;
   background: var(--bg);
+  /* 角标是这个块唯一的语言标识,属于要读的文本,走 4.5:1 那档 */
   color: var(--muted);
   font-family: var(--mono);
   font-size: .6875rem;
@@ -295,7 +313,7 @@ pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   font-size: .9375rem;
 }
 #content > ul.org-ul > li { margin: .5em 0; }
-#content > ul.org-ul > li::before { content: "→ "; color: var(--muted); }
+#content > ul.org-ul > li::before { content: "→ "; color: var(--faint); }
 #content > ul.org-ul > li > a { text-decoration: none; }
 #content > ul.org-ul > li > a:hover { text-decoration: underline; }
 
