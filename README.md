@@ -5,75 +5,114 @@ Org mode 写作、导出成静态 HTML、由 GitHub Pages 直接托管的博客�
 ## 仓库结构
 
 ```
-org/                    文章源文件,唯一需要手写的地方
-  index.org             首页目录,新增文章要在这里加一行链接
-*.html                  org 导出的产物,提交进仓库 —— Pages 发布的就是它们
-asserts/img/            文章插图
+org/                    文章与页面的源文件,唯一需要手写的地方
+*.html                  导出产物,提交进仓库 —— Pages 发布的就是它们
+atom.xml sitemap.xml    构建时生成
+robots.txt
+asserts/img/            插图与 favicon
 asserts/css/theme.css   主题:排版、配色、布局
 asserts/css/code.css    代码高亮,由 make code-css 从本机 Doom 生成
-publish.el              导出配置,构建的唯一事实来源
+publish.el              导出配置与 org-publish 项目定义
+site.el                 站点级元数据:导航、feed、sitemap、社交预览
 lib/htmlize.el          源码高亮(vendored)
-scripts/gen-code-css.el 上面那张高亮表的生成脚本
+scripts/gen-code-css.el 高亮配色的生成脚本
 scripts/check-output.py 产物完整性检查
 ```
 
-## 日常操作
+## 发布:两条路,同一段代码
 
-需要 Emacs 30.2(`brew install emacs`)和 python3,不需要装任何 Emacs 包。
+**Emacs 内**(Doom):
+
+| | |
+| --- | --- |
+| `SPC m e P p` | `org-export-dispatch` → publish current project |
+| `M-x blog-publish` | 同上,一步到位 |
+| `M-x +blog/verify` | 构建 + 断链与样式覆盖检查 |
+| `M-x +blog/serve` | 起本地预览 |
+
+**终端**:
 
 ```sh
-make build      # 重建全部 HTML
-make serve      # 构建后起 http://localhost:8000/ 预览
-make verify     # 产物完整性:站内引用不断链 + 每个 token class 都有样式
-make check      # 校验提交的 HTML 与 org 源同步(CI 跑的就是它)
+make build      # 重建站点
+make serve      # 构建后起 http://localhost:8000/
+make verify     # 站内引用不断链 + 每个 token class 都有样式
+make check      # 校验提交的产物与 org 源同步(CI 跑的就是它)
 make code-css   # 从本机 Doom 重新生成高亮样式,换主题时才需要
 ```
 
-在 Doom Emacs 里用 `M-x +blog/publish`(构建 + 完整性检查)、`M-x +blog/serve`(预览)、
-`M-x +blog/find-file`(跳到 `org/`),定义在 `~/.config/doom/config.el`。它们走的是
-子进程里的同一套 make,**不是** `org-publish` —— 交互路径和 batch 路径分叉的话,
-下面那条零 diff 不变式就没人守了。
+两条路走的是**同一套 project 配置**:语言检查、清缓存、生成 feed/sitemap 全挂在
+项目的 `:preparation-function` / `:completion-function` 上,`blog-publish` 只是一层薄壳。
+实测 `doom emacs --batch` 与 `emacs -Q --batch` 导出的 8 个产物 md5 全等,改动标题
+制造锚点重排后仍然全等。
+
+Doom 侧的命令定义在 `~/.config/doom/config.el`,它 `after! ox-publish` 时加载
+本仓库的 `publish.el`。
+
+**发布用 `P p`,不要用 `P f`** —— 后者只发当前文件,不触发项目钩子,feed 和 sitemap
+不会更新。
 
 ## 写一篇新文章
 
-1. 在 `org/` 下新建 `foo.org`,开头写 `#+TITLE:` 和 `#+DATE:`;
-2. 在 `org/index.org` 里加一行 `- [[file:foo.org][标题]]`;
-3. `make verify`;
-4. 把 `foo.html`、`index.html` 和 org 源一起提交。
+1. 在 `org/` 下新建 `foo.org`,写 `#+TITLE:` 和 `#+DATE:`(建议再加 `#+DESCRIPTION:`,
+   它会进 meta description、Open Graph 和 feed 摘要);
+2. `make verify` 或 `M-x +blog/verify`;
+3. 把 `foo.html` 和所有变更的产物一起提交。
 
-**产物必须和源一起提交** —— Pages 发布的是仓库里的 HTML,不是 CI 现构建的。忘了重建的话
-CI 的 `make check` 会拦下来(它同时查 `git diff` 和 untracked,新增文章漏提交 HTML 也拦)。
+首页列表是自动生成的,按 `#+DATE` 倒序 —— **不用回来改 `index.org`**。
 
-代码块必须写语言(`#+begin_src shell`)。构建前有一道闸会扫所有 `#+begin_src`,
-三种情况直接报错并指出文件行号:找不到 major-mode、裸块不写语言、解析到 `*-ts-mode`。
-最后一种是因为 tree-sitter grammar 是机器本地的 `.dylib`,CI 上没有,产物会因机器而异。
-纯粹的示例文本用 `#+begin_example`。
+**产物必须和源一起提交** —— Pages 发布的是仓库里的文件,不是 CI 现构建的。忘了重建
+CI 会拦下来:`make check` 同时查 `git diff` 和 untracked,范围覆盖 HTML、`atom.xml`、
+`sitemap.xml`、`robots.txt`。
 
-高亮由 Emacs 的 major-mode 驱动,所以**任何 `emacs -Q` 认识的语言都自动上色**,
-语言角标也由导出 filter 写进 `data-lang` 后用 `content: attr(data-lang)` 显示,
-不需要为每种语言加规则。站内现用的是 shell / conf / bat 三种(`grep -oh 'data-lang="[^"]*"' *.html | sort -u` 可查)。
+代码块必须写语言(`#+begin_src shell`)。构建前有一道闸扫所有 `#+begin_src`,三种情况
+报错并指出文件行号:找不到 major-mode、裸块不写语言、解析到 `*-ts-mode`(它要
+tree-sitter grammar,那是机器本地的 `.dylib`,CI 上没有)。纯示例文本用 `#+begin_example`。
 
-**不必查表**:写完跑一次 `make build`,不支持的语言会被闸拦下,报错里有文件行号和
-两条出路(映射到内置 mode,或 vendored 进 `lib/`)。这里不列支持清单 —— 那种手维护的
-白名单没人保证它跟 Emacs 版本和 `org-src-lang-modes` 同步,过一阵就变成假话,
-正是这轮从 `theme.css` 里删掉的那 22 条语言规则的同一个毛病。
+高亮由 Emacs 的 major-mode 驱动,所以**任何 `emacs -Q` 认识的语言都自动上色**,语言角标
+也由导出 filter 写进 `data-lang` 后用 `content: attr(data-lang)` 显示。站内现用
+shell / conf / bat。**不必查表**:写完跑一次构建,不支持的会被闸拦下并给出两条出路。
+
+## 导航栏:页面自己声明
+
+在 org 头部写一行就进导航:
+
+```org
+#+NAV: 20 关于
+```
+
+序号决定排序,后面是显示的标签。`site.el` 在构建期扫 `org/` 收集,当前页自动带
+`aria-current="page"`(既是无障碍语义,也是高亮用的样式钩子)。
+
+这里**不维护页面清单** —— 手写清单和之前从 `theme.css` 删掉的 22 条语言白名单是同一个
+失效模式:新增页面忘了加就静默漏掉。导航身份跟着页面自己走。
+
+样式取平铺、无下拉、无汉堡:隐藏式菜单会让任务完成率下降(NN/g 的数据是 21%),而这个站
+总共三五个入口,没有藏起来的理由。参考了 [matklad](https://matklad.github.io/) 与
+[protesilaos](https://protesilaos.com/) 的做法 —— 站名兼首页链接,其余平铺在右侧。
 
 ## 构建为什么是确定性的
 
-同一份 org 在任何机器上都产出逐字节相同的 HTML —— macOS 本地与 Ubuntu CI 上重建的产物
-`git diff` 为空。这不是自然结果,org 默认有三处非确定性,`publish.el` 逐个消掉了:
+同一份 org 在任何机器、任何会话里都产出逐字节相同的 HTML。这不是自然结果:
 
 | 非确定性 | 默认行为 | 处理 |
 | --- | --- | --- |
-| 锚点 ID | `(random most-positive-fixnum)`,每次构建全变 | 改成按文档顺序递增 |
+| 锚点 ID | `(random most-positive-fixnum)`,每次全变 | 改成按文档顺序递增 |
 | 页头时间戳 | 嵌入构建时刻 | `org-export-time-stamp-file nil` |
 | 页脚日期 | 取 org 文件 mtime | 改用各文章的 `#+DATE:` |
+| feed `<updated>` | 惯例用当前时间 | 取全站 `#+DATE` 的最大值 |
+| **未显式设的导出选项** | 继承当前会话 | 先归零到 defcustom 出厂默认 |
 
-外加:`org-publish` 的缓存会复用上次的锚点(于是"有缓存"和"无缓存"产出不同),构建前清掉;
-`sh-mode` 的方言取自 `$SHELL`(本机 zsh、CI 多半 bash),不同方言的关键字表不同会着出不同的
-色,钉成 bash;Makefile 断言 Emacs 版本,用错版本立刻失败而不是静默产出不同 HTML。
+最后一条最隐蔽:Doom 的 `:lang org` 把 `org-export-with-smart-quotes` 设成 `t`,而
+`emacs -Q` 下是 `nil` —— 同一份 org,从 Doom 里发布一次就会产出不同的字节。所以导出前
+把 `org-export-options-alist` 与 html backend 声明的**全部 102 个**选项变量归零到各自的
+`defcustom` 出厂默认,再由 project plist 显式覆盖。新增选项自动纳入,不用在这里手维护
+一份清单。
 
-有了这些,`make check` 才能是朴素的 `git diff --exit-code`,而不用为一行时间戳写过滤特例。
+外加:`org-publish` 的缓存会复用上次的锚点(crossrefs 优先于新分配),构建前清掉;
+`sh-mode` 的方言取自 `$SHELL`(本机 zsh、CI 多半 bash),不同方言的关键字表不同会着出
+不同的色,钉成 bash;Makefile 断言 Emacs 版本,用错版本立刻失败而不是静默产出不同 HTML。
+
+有了这些,`make check` 才能是朴素的 `git diff --exit-code`。
 
 ## 主题
 
@@ -83,9 +122,8 @@ CI 的 `make check` 会拦下来(它同时查 `git diff` 和 untracked,新增文
   `prefers-color-scheme`,零 JS;
 - 作者把 `lsp-ui` 的 sideline 和 doc 都关了(改用 `K` 主动看),所以主题里没有任何自动
   冒出来的东西:目录不浮动、无 hover 卡片、无滚动动画、无粘性 header;
-- 3 篇文章 17 个源码块,代码是主角 —— 代码块是页面上唯一比底色亮的区域,视线自然落上去;
-- 标题层级靠字号、上方留白、以及第四级往下切等宽字体来表达,不用颜色也不用色条 ——
-  颜色全留给代码;
+- 3 篇文章 17 个源码块,代码是主角 —— 代码块是页面上唯一比底色亮的区域;
+- 标题层级靠字号、上方留白、以及第四级往下切等宽字体来表达,不用颜色也不用色条;
 - 正文中英混排且不加空格,所以行宽按中文字数定(约 38 字/行),字间距靠
   `text-spacing-trim` 自动处理。
 
@@ -94,8 +132,7 @@ woff2,一份中文等宽 20MB+,为几个代码块不值。
 
 试过又撤掉的:在 h2/h3/h4 前用 `::before` 加 `## / ### / ####` 呼应 org 源的星号数。
 读者第一眼看到的是"markdown 没渲染成功",而且 org 一级标题导出成 h2、井号数比源码多一个,
-更像是坏了。一个需要解释才能看懂的装饰不如没有。同理,h5 一度改成灰色降权,结果它比自己
-管的正文还淡 —— 改成切等宽字体。
+更像是坏了。同理,h5 一度改成灰色降权,结果它比自己管的正文还淡 —— 改成切等宽字体。
 
 ### 配色与对比度
 
@@ -108,8 +145,8 @@ woff2,一份中文等宽 20MB+,为几个代码块不值。
 
 | | 阈值 | 用在哪 |
 | --- | --- | --- |
-| 页面文本与链接 | 4.5:1(WCAG AA) | 正文、链接、`em`、行内代码、页脚导航目录、语言角标 |
-| 纯装饰 | 3:1 | 列表符号 `→`、list marker |
+| 页面文本与链接 | 4.5:1(WCAG AA) | 正文、链接、`em`、行内代码、导航、页脚、语言角标 |
+| 纯装饰 | 3:1 | 列表符号、list marker |
 | 代码块 token | 3:1 | `code.css` 里的语法高亮 |
 
 代码 token 用 3:1 不是放水:那是代码块底色上的成片代码,语法结构本身提供辨识冗余。
@@ -131,15 +168,29 @@ woff2,一份中文等宽 20MB+,为几个代码块不值。
   `(:inherit font-lock-comment-face)`,只收有 `:foreground` 的 face 会把它漏掉,结果注释的
   `#` 和注释正文不同色 —— 肉眼几乎看不出来,`make verify` 的 class 覆盖对账能抓到。
 - **对比度要兜底**。编辑器配色搬到网页会掉可读性:注释 `#5B6268` 落在 `#282c34` 上只有
-  2.26:1,远低于 WCAG 的 3:1。这不是"线上一直这样" —— 2023 那批 HTML 是白底,同一个灰有
-  6.19:1。给代码块上深色底是设计改动,得自己把账补上,所以生成时按 3:1 提亮,并在 CSS 注释
-  里标出调过哪几个。
+  2.26:1,远低于 WCAG 的 3:1。给代码块上深色底是设计改动,得自己把账补上,所以生成时按
+  3:1 提亮,并在 CSS 注释里标出调过哪几个。
 
-htmlize 本身 vendored 在 `lib/`:本机 Doom 里装着同一份,但构建不该依赖用户装没装 Doom、
-装的哪个版本。缺了它 org 只在 stderr 打一行 warning 就静默降级成纯文本,exit code 照样是 0。
+htmlize 本身 vendored 在 `lib/`:本机 Doom 里装着同一份,但构建不该依赖用户装没装 Doom。
+缺了它 org 只在 stderr 打一行 warning 就静默降级成纯文本,exit code 照样是 0。
 
-## 域名
+## 404 与绝对路径
+
+`org/404.org` 导出的 `404.html` 里,所有站内链接和资源引用都会被改写成**根绝对路径**。
+
+GitHub Pages 对任意深度的不存在路径都返回 `404.html` 的内容,但浏览器按**请求路径**解析
+相对链接 —— 访客打开 `/foo/bar` 时,`./asserts/css/theme.css` 会去要
+`/foo/asserts/css/theme.css`。结果是裸样式加一排死链。本地 `http.server` 直接开
+`/404.html` 看不出来(深度恰好是 0)。
+
+`404.html` 不进 `sitemap.xml`。
+
+## 绝对 URL 与域名
+
+feed、sitemap、`og:url`、canonical 里的绝对地址都从 `site.el` 的 `blog-base-url` 拼,
+只有这一处。
 
 `CNAME` 指定了自定义域名 `lefix.me`,该域名已过期。只要这个文件还在,Pages 就会把
 `https://jamesarch.github.io/` 301 到 `http://lefix.me/`(实测如此),所以线上两个地址
-目前都打不开 —— 不是"还能用 github.io 顶着"。续期,或删掉 `CNAME` 让 github.io 直接生效。
+目前都打不开。续期,或删掉 `CNAME` 让 github.io 直接生效 —— 后者做完把 `blog-base-url`
+一并确认即可,它现在就指向 github.io。
