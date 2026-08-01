@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<!-- 2023-01-06 Fri 19:33 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>如何使用wireshark解密https流量</title>
 <meta name="author" content="jamesarch" />
 <meta name="generator" content="Org Mode" />
-<style>
+<style type="text/css">
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -191,7 +190,7 @@
     { background-color: #ffff00; color: #000000; font-weight: bold; }
   .org-svg { }
 </style>
-<link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+<link rel="stylesheet" type="text/css" href="./asserts/css/org.css"/>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -205,13 +204,13 @@
 <h2>&#30446;&#24405;</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org1d71f14">如何使用wireshark解密https流量</a>
+<li><a href="#org000000d">如何使用wireshark解密https流量</a>
 <ul>
-<li><a href="#org69ef6d4">SSLKEYLOGFILE</a>
+<li><a href="#org0000001">SSLKEYLOGFILE</a>
 <ul>
-<li><a href="#orgfe46445">windows</a></li>
-<li><a href="#org99c7f0d">Linux</a></li>
-<li><a href="#org9750b15">macOS</a></li>
+<li><a href="#org0000004">windows</a></li>
+<li><a href="#org0000007">Linux</a></li>
+<li><a href="#org000000a">macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -219,29 +218,30 @@
 </ul>
 </div>
 </nav>
-<div id="outline-container-org1d71f14" class="outline-2">
-<h2 id="org1d71f14">如何使用wireshark解密https流量</h2>
-<div class="outline-text-2" id="text-org1d71f14">
+<div id="outline-container-org000000d" class="outline-2">
+<h2 id="org000000d">如何使用wireshark解密https流量</h2>
+<div class="outline-text-2" id="text-org000000d">
 </div>
-<div id="outline-container-org69ef6d4" class="outline-3">
-<h3 id="org69ef6d4">SSLKEYLOGFILE</h3>
-<div class="outline-text-3" id="text-org69ef6d4">
+<div id="outline-container-org0000001" class="outline-3">
+<h3 id="org0000001">SSLKEYLOGFILE</h3>
+<div class="outline-text-3" id="text-org0000001">
 <p>
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 </p>
 </div>
-<div id="outline-container-orgfe46445" class="outline-4">
-<h4 id="orgfe46445">windows</h4>
-<div class="outline-text-4" id="text-orgfe46445">
-<pre class="example">
-set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
-start firefox
+<div id="outline-container-org0000004" class="outline-4">
+<h4 id="org0000004">windows</h4>
+<div class="outline-text-4" id="text-org0000004">
+<div class="org-src-container">
+<pre class="src src-bat"><span style="color: #c678dd;">set</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=%<span style="color: #dcaeea;">USERPROFILE</span>%\Desktop\keylogfile.txt
+<span style="color: #51afef;">start</span> firefox
 </pre>
 </div>
 </div>
-<div id="outline-container-org99c7f0d" class="outline-4">
-<h4 id="org99c7f0d">Linux</h4>
-<div class="outline-text-4" id="text-org99c7f0d">
+</div>
+<div id="outline-container-org0000007" class="outline-4">
+<h4 id="org0000007">Linux</h4>
+<div class="outline-text-4" id="text-org0000007">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 firefox
@@ -249,9 +249,9 @@ firefox
 </div>
 </div>
 </div>
-<div id="outline-container-org9750b15" class="outline-4">
-<h4 id="org9750b15">macOS</h4>
-<div class="outline-text-4" id="text-org9750b15">
+<div id="outline-container-org000000a" class="outline-4">
+<h4 id="org000000a">macOS</h4>
+<div class="outline-text-4" id="text-org000000a">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #c678dd;">export</span> <span style="color: #dcaeea;">SSLKEYLOGFILE</span>=$<span style="color: #dcaeea;">HOME</span>/Desktop/keylogfile.txt
 open -a firefox
@@ -293,8 +293,8 @@ tls and (http or http2)
 </div>
 </div>
 <div id="postamble" class="status">
+<p class="date">&#26085;&#26399;: 2022-01-17</p>
 <p class="author">&#20316;&#32773;: jamesarch</p>
-<p class="date">Created: 2023-01-06 Fri 19:33</p>
 </div>
 </body>
 </html>

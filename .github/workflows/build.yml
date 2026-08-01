@@ -1,0 +1,27 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 版本要和本地开发用的一致:换个 Emacs/Org 版本,内嵌 CSS 与标签结构就会变,
+      # 下面 check 的零 diff 断言会全线失败。
+      - uses: purcell/setup-emacs@master
+        with:
+          version: '30.2'
+
+      - name: 站内引用无断链
+        run: make links
+
+      # 构建是确定性的,所以这里能硬要求零 diff。失败通常意味着改了 org 却忘了
+      # 提交 make build 的产物 —— Pages 发布的是仓库里的 HTML,不重建就不会上线。
+      - name: 提交的 HTML 与 org 源同步
+        run: make check

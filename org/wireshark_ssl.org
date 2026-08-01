@@ -1,9 +1,10 @@
 #+TITLE: 如何使用wireshark解密https流量
+#+DATE: 2022-01-17
 * 如何使用wireshark解密https流量
 ** SSLKEYLOGFILE
 在wireshark里有一个环境变量 叫SSLKEYLOGFILE 通过设置这个环境变量，可以解密https流量，以firefox为例不同的系统设置如下:
 *** windows
-#+begin_src
+#+begin_src bat
 set SSLKEYLOGFILE=%USERPROFILE%\Desktop\keylogfile.txt
 start firefox
 #+end_src

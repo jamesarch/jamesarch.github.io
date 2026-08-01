@@ -1,4 +1,5 @@
 #+TITLE: 屏蔽钉钉微信等APP的几种思路
+#+DATE: 2022-01-28
 #+OPTIONS: ^:nil
 * 背景
 最近因业务需求要屏蔽指定APP的登录，在这中间走了不少弯路，在此记录下。
@@ -7,7 +8,7 @@
 ** 屏蔽IP/域名
 *** dnsmasq
 使用dnsmasq里面的重定向域名功能，将域名指定到一个不存在的地址，或者错误的地址，可以让解析失效,比如钉钉，可以在dnsmasq.conf里添加这两行，强制其解析到127.0.0.1。
-#+begin_src
+#+begin_src conf
 address=/dingtalk.com/127.0.0.1
 address=/dingtalkapp.com/127.0.0.1
 #+end_src

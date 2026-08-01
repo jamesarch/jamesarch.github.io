@@ -2,3 +2,6 @@
 .idea
 *.log
 */.DS_Store
+
+# org-publish 的时间戳/crossrefs 缓存,由 publish.el 每次构建前清掉
+.cache/
