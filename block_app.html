@@ -69,7 +69,7 @@
 使用dnsmasq里面的重定向域名功能，将域名指定到一个不存在的地址，或者错误的地址，可以让解析失效,比如钉钉，可以在dnsmasq.conf里添加这两行，强制其解析到127.0.0.1。
 </p>
 <div class="org-src-container">
-<pre class="src src-conf"><span class="org-variable-name">address</span>=/dingtalk.com/127.0.0.1
+<pre data-lang="conf" class="src src-conf"><span class="org-variable-name">address</span>=/dingtalk.com/127.0.0.1
 <span class="org-variable-name">address</span>=/dingtalkapp.com/127.0.0.1
 </pre>
 </div>
@@ -84,7 +84,7 @@ iptables这个方法就比较复杂了，首先要抓到域名解析对应的IP�
 106.11.40.0/21和106.11.0.0/16,取其中较小的网段106.11.40.0/21来进行屏蔽,避免误屏蔽。
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">iptables  -A INPUT -s 106.11.40.0/21 -j DROP
+<pre data-lang="shell" class="src src-shell">iptables  -A INPUT -s 106.11.40.0/21 -j DROP
 iptables  -A OUTPUT -s 106.11.40.0/21 -j DROP
 </pre>
 </div>
@@ -97,7 +97,7 @@ iptables  -A OUTPUT -s 106.11.40.0/21 -j DROP
 路由黑洞和上述iptables原理一致，都是屏蔽指定的IP段，代码如下
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">ip route add blackhole 106.11.40.0/21
+<pre data-lang="shell" class="src src-shell">ip route add blackhole 106.11.40.0/21
 </pre>
 </div>
 </div>
@@ -126,21 +126,21 @@ IP屏蔽这个就更原始了，各个大厂的IP段数不胜数，而且误封�
 <img src="./asserts/img/qq_login.png" alt="qq_login.png">
 </p>
 </div>
-<ul class="org-ul">
-<li><a id="org0000016"></a>string 模块<br>
+<div id="outline-container-org0000016" class="outline-5">
+<h5 id="org0000016">string 模块</h5>
 <div class="outline-text-5" id="text-org0000016">
 <p>
 iptables里的string模块有两种匹配方式，一种是常规的字符串，另一种就是十六进制字符串，使用方法分别如下
 </p>
 <div class="org-src-container">
-<pre class="src src-shell"><span class="org-comment-delimiter"># </span><span class="org-comment">&#23631;&#34109;&#38025;&#38025;&#30331;&#24405;&#26381;&#21153;&#22120;
+<pre data-lang="shell" class="src src-shell"><span class="org-comment-delimiter"># </span><span class="org-comment">&#23631;&#34109;&#38025;&#38025;&#30331;&#24405;&#26381;&#21153;&#22120;
 </span>iptables -A INPUT  -m string --string <span class="org-string">"im.dingtalk.com"</span> --algo bm -j DROP
 </pre>
 </div>
 
 
 <div class="org-src-container">
-<pre class="src src-shell"><span class="org-comment-delimiter"># </span><span class="org-comment">&#23631;&#34109;QQ&#30331;&#24405;&#26381;&#21153;&#22120;
+<pre data-lang="shell" class="src src-shell"><span class="org-comment-delimiter"># </span><span class="org-comment">&#23631;&#34109;QQ&#30331;&#24405;&#26381;&#21153;&#22120;
 </span>iptables -A INPUT --match string --algo kmp --hex-string <span class="org-string">'|00 a5 02 3a 45 08 25|'</span> -j DROP
 </pre>
 </div>
@@ -155,18 +155,19 @@ iptables里的string模块有两种匹配方式，一种是常规的字符串，
 在编译安装完成之后，可以运行以下命令来屏蔽微信登录。屏蔽原理是匹配MicroMessenger这个HTTP UA 如果匹配到就丢弃数据包
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">iptables -A INPUT -m string --string <span class="org-string">'/^MicroMessenger.*/'</span> --algo pcre -j DROP
+<pre data-lang="shell" class="src src-shell">iptables -A INPUT -m string --string <span class="org-string">'/^MicroMessenger.*/'</span> --algo pcre -j DROP
 </pre>
 </div>
 </div>
-</li>
-<li><a id="org0000019"></a>bpf 模块<br>
+</div>
+<div id="outline-container-org0000019" class="outline-5">
+<h5 id="org0000019">bpf 模块</h5>
 <div class="outline-text-5" id="text-org0000019">
 <p>
 bpf模块这个比较新，需要在iptables 1.4.19以上版本 其中用到的nfbpf_compile这个命令在centos 7这个版本是没有的，可以使用tcpdump生成对应的cBPF字节码
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">ip tuntap add tun0 mode tun
+<pre data-lang="shell" class="src src-shell">ip tuntap add tun0 mode tun
 ip link set tun0 up
 tcpdump -ddd -i tun0 dst host im.dingtalk.com | sed <span class="org-string">':a;N;$!ba;s/\n/,/g'</span>
 </pre>
@@ -176,7 +177,7 @@ tcpdump -ddd -i tun0 dst host im.dingtalk.com | sed <span class="org-string">':a
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">nfbpf_compile RAW <span class="org-string">'dst host im.dingtalk.com'</span>
+<pre data-lang="shell" class="src src-shell">nfbpf_compile RAW <span class="org-string">'dst host im.dingtalk.com'</span>
 </pre>
 </div>
 <p>
@@ -187,13 +188,12 @@ tcpdump -ddd -i tun0 dst host im.dingtalk.com | sed <span class="org-string">':a
 还是以钉钉为例
 </p>
 <div class="org-src-container">
-<pre class="src src-shell"><span class="org-comment-delimiter">#</span><span class="org-comment">&#20197;&#19979;&#20195;&#30721;&#26410;&#39564;&#35777;
+<pre data-lang="shell" class="src src-shell"><span class="org-comment-delimiter">#</span><span class="org-comment">&#20197;&#19979;&#20195;&#30721;&#26410;&#39564;&#35777;
 </span>iptables -A INPUT -m bpf --bytecode <span class="org-string">"`nfbpf_compile RAW 'dst host im.dingtalk.com'`"</span> -j DROP
 </pre>
 </div>
 </div>
-</li>
-</ul>
+</div>
 </div>
 <div id="outline-container-org000001c" class="outline-4">
 <h4 id="org000001c">xdp</h4>

@@ -125,28 +125,33 @@ h1.title {
   letter-spacing: -.01em;
 }
 
+/* 层级靠三样东西表达:字号、上方留白、以及深层标题转灰。
+   曾经在 h2/h3/h4 前用 ::before 加过 "## / ### / ####",呼应 org 源的星号数。
+   实测失败 —— 读者第一眼看到的是"markdown 没渲染成功",而不是"这篇是 org 写的";
+   而且 org 一级标题导出成 h2,井号数还比源码多一个,更像是坏了。
+   一个需要解释才能看懂的装饰,不如没有。
+
+   留白按层级递减,让深层小节在视觉上归属到父级下面,而不是平铺。 */
 h2, h3, h4, h5, h6 {
-  margin: calc(var(--step) * 2) 0 .6em;
   line-height: 1.45;
   font-weight: 600;
+  margin-bottom: .6em;
   scroll-margin-top: var(--step);
 }
 
-h2 { font-size: 1.3rem; }
-h3 { font-size: 1.1rem; }
-h4 { font-size: 1rem; }
-h5, h6 { font-size: .9375rem; }
-
-/* 层级用 org 源里的星号数表达,不靠颜色也不靠色条 —— 颜色全留给代码。
-   顺带也告诉读者这篇是 org 写的。 */
-h2::before, h3::before, h4::before {
+h2 { font-size: 1.35rem;  margin-top: calc(var(--step) * 2); }
+h3 { font-size: 1.15rem;  margin-top: calc(var(--step) * 1.6); }
+/* 四级往下字号已经贴着正文,再缩就成了"比正文还小的标题"。
+   先试过把 h5/h6 转 muted,结果它比正文还弱 —— 标题不该比自己管的正文更淡。
+   改用等宽:深层小节切到 --mono,和上面几级的比例字体一眼分得开,又和站点整体
+   的编辑器语言一致。 */
+h4 { font-size: 1.05rem;  margin-top: calc(var(--step) * 1.2); }
+h5, h6 {
+  font-size: .9375rem;
+  margin-top: var(--step);
   font-family: var(--mono);
-  font-weight: 400;
-  color: var(--faint);
+  letter-spacing: .01em;
 }
-h2::before { content: "## "; }
-h3::before { content: "### "; }
-h4::before { content: "#### "; }
 
 /* ── 正文 ─────────────────────────────────────────────────────────── */
 
@@ -222,9 +227,11 @@ pre code {
   border-radius: 0;
 }
 
-/* 语言标签。org 把语言编进 class(src-shell / src-conf / …),CSS 取不出
-   attr 的子串,只能穷举 —— 覆盖作者写过的和大概率会写的。 */
-pre.src::before {
+/* 语言角标。语言名由 publish.el 的导出 filter 写进 data-lang —— org 本身只把它
+   编进 class(src-shell / src-rust / …),而 CSS 取不出 class 的子串,穷举白名单
+   的话写篇 ruby 就会有高亮却没角标。 */
+pre.src[data-lang]::before {
+  content: attr(data-lang);
   position: absolute;
   top: 0;
   right: .7em;
@@ -237,28 +244,6 @@ pre.src::before {
   font-size: .6875rem;
   letter-spacing: .04em;
 }
-pre.src-shell::before       { content: "shell"; }
-pre.src-bash::before        { content: "bash"; }
-pre.src-zsh::before         { content: "zsh"; }
-pre.src-conf::before        { content: "conf"; }
-pre.src-bat::before         { content: "bat"; }
-pre.src-rust::before        { content: "rust"; }
-pre.src-python::before      { content: "python"; }
-pre.src-js::before          { content: "js"; }
-pre.src-ts::before          { content: "ts"; }
-pre.src-json::before        { content: "json"; }
-pre.src-yaml::before        { content: "yaml"; }
-pre.src-toml::before        { content: "toml"; }
-pre.src-sql::before         { content: "sql"; }
-pre.src-go::before          { content: "go"; }
-pre.src-c::before           { content: "c"; }
-pre.src-cpp::before         { content: "c++"; }
-pre.src-nginx::before       { content: "nginx"; }
-pre.src-dockerfile::before  { content: "dockerfile"; }
-pre.src-diff::before        { content: "diff"; }
-pre.src-makefile::before    { content: "make"; }
-pre.src-emacs-lisp::before  { content: "elisp"; }
-pre.src-org::before         { content: "org"; }
 
 /* 无语言的固定宽度块(#+begin_example 和 ": " 行)。底色直接用页面底 —— 深浅两套
    下它都比代码块暗一档,视觉上"凹下去",跟带标签的源码块拉开层次。
@@ -295,7 +280,6 @@ pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   /* 不给中文加字距,"目录"两个字会被拉散 */
   color: var(--muted);
 }
-#table-of-contents h2::before { content: none; }
 
 #table-of-contents ul { margin: 0; padding-left: 1.2em; list-style: none; }
 #text-table-of-contents > ul { padding-left: 0; }
@@ -355,8 +339,6 @@ th { font-weight: 600; color: var(--muted); font-size: .8125rem; letter-spacing:
   h1.title { font-size: 1.4rem; }
   h2 { font-size: 1.15rem; }
   pre { font-size: .75rem; padding: .8em .9em; }
-  /* 窄屏下 ## 前缀挤占标题宽度,收掉 */
-  h2::before, h3::before, h4::before { content: none; }
 }
 
 /* ── 打印 ─────────────────────────────────────────────────────────── */

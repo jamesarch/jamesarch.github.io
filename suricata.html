@@ -53,7 +53,7 @@ suricata是一套IDS/IPS系统，因为需要实现一个拦截的功能，这�
 这里以centos 7为例
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">yum install epel-release yum-plugin-copr
+<pre data-lang="shell" class="src src-shell">yum install epel-release yum-plugin-copr
 yum copr enable @oisf/suricata-latest
 yum install suricata
 </pre>
@@ -67,7 +67,7 @@ yum install suricata
 IDS模式有网卡过滤和NFQUEUE两种模式，这里使用NFQUEUE，也可以根据自身需求来选择，安装完成之后，需要使用iptables来创建对应的规则拦截所有流量
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">sudo iptables -A INPUT -j NFQUEUE --queue-bypass
+<pre data-lang="shell" class="src src-shell">sudo iptables -A INPUT -j NFQUEUE --queue-bypass
 sudo iptables -A OUTPUT -j NFQUEUE --queue-bypass
 </pre>
 </div>
@@ -76,7 +76,7 @@ sudo iptables -A OUTPUT -j NFQUEUE --queue-bypass
 之后在/etc/sysconfig/suricata文件里面将OPTIONS的内容改为以下内容
 </p>
 <div class="org-src-container">
-<pre class="src src-conf"><span class="org-variable-name">OPTIONS</span>=<span class="org-string">"-q 0 --user suricata"</span>
+<pre data-lang="conf" class="src src-conf"><span class="org-variable-name">OPTIONS</span>=<span class="org-string">"-q 0 --user suricata"</span>
 </pre>
 </div>
 <p>
@@ -104,7 +104,7 @@ drop tls any any -&gt; any any (msg:"block wx.qq.com";tls.cert_subject;content:"
 最后运行suricata -T检测规则是否合格，如果正常没报错的话，可以重启服务观察是否有拦截到流量
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">systemctl restart suricata
+<pre data-lang="shell" class="src src-shell">systemctl restart suricata
 iptables -nvL <span class="org-comment-delimiter">#</span><span class="org-comment">&#26597;&#30475;&#26159;&#21542;&#26377;&#27969;&#37327;&#32463;&#36807;
 </span>tail -f /var/log/suricata/fast.log <span class="org-comment-delimiter">#</span><span class="org-comment">&#26597;&#30475;&#26159;&#21542;&#26377;&#23545;&#24212;&#30340;&#36755;&#20986;</span>
 </pre>

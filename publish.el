@@ -37,6 +37,24 @@
 (setq sh-shell-file "/bin/bash")
 (add-hook 'sh-mode-hook (lambda () (sh-set-shell "bash" nil nil)))
 
+;; 把语言名放进 data-lang,样式表就能用 content: attr(data-lang) 显示角标。
+;; org 只把语言编进 class(src-shell / src-rust / …),而 CSS 取不出 class 的
+;; 子串,只能一条条穷举 —— 那样写篇 ruby 的文章会有高亮却没角标。
+(defun blog--src-block-lang (html backend _info)
+  "给 HTML 里的源码块补上 data-lang 属性。"
+  (when (org-export-derived-backend-p backend 'html)
+    (replace-regexp-in-string
+     "<pre class=\"src src-\\([^\"]+\\)\""
+     "<pre data-lang=\"\\1\" class=\"src src-\\1\""
+     html t)))
+(add-to-list 'org-export-filter-src-block-functions #'blog--src-block-lang)
+
+;; org 默认把 json 找成 json-mode(第三方包)。内置的 js-json-mode 是纯 elisp,
+;; 不需要 tree-sitter 的 .dylib,导出结果跨机器一致 —— 这是选它而不选
+;; json-ts-mode 的原因,后者的 grammar 是机器本地的二进制,CI 上没有。
+(require 'org-src)
+(add-to-list 'org-src-lang-modes '("json" . js-json))
+
 ;;; 确定性锚点 ID
 
 ;; org 默认用 (random most-positive-fixnum) 生成 #orgXXXXXXX,同一份 org 每次构建
@@ -67,7 +85,14 @@
       org-export-with-author t
       org-export-with-email nil
       org-export-with-creator nil
-      org-export-with-toc t
+      ;; 目录深度和标题层级分开定:正文要认到 5 级,目录只列 3 级 ——
+      ;; 跟着 headline-levels 走的话 block_app 的目录会从 9 项涨到 13 项,
+      ;; 比正文第一屏还长。
+      org-export-with-toc 3
+      ;; 默认只有 3 —— 超过的标题不会变成 <hN>,而是塞进 <li> 加个 <br>。
+      ;; block_app.org 有 `**** string 模块' 这种四级标题,默认值下它们在页面上
+      ;; 就是列表项,看着像 org 没解析。
+      org-export-headline-levels 5
       org-export-with-sub-superscripts '{}
       org-html-validation-link nil
       org-html-doctype "html5"
@@ -109,14 +134,53 @@
          :publishing-directory ,blog-root
          :publishing-function org-html-publish-to-html
          :recursive nil
-         :with-toc t
+         ;; project property 会盖掉全局的 org-export-with-toc,得同步写 3
+         :with-toc 3
          :section-numbers nil
          :html-link-up "index.html"
          :html-link-home "index.html")
         ("blog" :components ("blog-pages"))))
 
+(defun blog--check-src-languages ()
+  "扫一遍 org 源里的 #+begin_src,语言不可用的直接报错。
+
+高亮是构建期由 Emacs 的 major-mode 驱动的,所以任何 Emacs 认识的语言都自动上色。
+反过来,不认识的语言 org 不会吭声 —— 照常导出一个纯文本 pre,构建绿、verify 也绿
+(class 对账只查已出现的 class,查不出本该出现却没有的),只有肉眼看页面才发现
+代码块是一片灰。这道闸把它变成硬失败。
+
+三种情况都拦:
+  · 找不到 major-mode(如 rust,rust-mode 是第三方包);
+  · 解析到 *-ts-mode —— 它 fboundp 为 t 所以能骗过 fboundp 检查,但没有
+    tree-sitter 的 .dylib 就是一片灰,而那是机器本地的二进制,CI 上没有,
+    产物会因机器而异;
+  · 裸 #+begin_src 不写语言 —— 导出成 src-nil,既没高亮,角标还会显示 nil。"
+  (require 'org-src)
+  (let (bad)
+    (dolist (file (directory-files (expand-file-name "org" blog-root) t "\\.org\\'"))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (while (re-search-forward "^[ \t]*#\\+begin_src\\(?:[ \t]+\\([^ \t\n]+\\)\\)?" nil t)
+          (let* ((lang (match-string 1))
+                 (mode (and lang (org-src-get-lang-mode lang)))
+                 (where (format "  %s:%d  " (file-name-nondirectory file)
+                                (line-number-at-pos)))
+                 (reason
+                  (cond
+                   ((null lang) "没写语言,会导出成 src-nil:纯文本 + 角标显示 nil")
+                   ((string-suffix-p "-ts-mode" (symbol-name mode))
+                    (format "%s 解析到 %s,它要 tree-sitter grammar(机器本地二进制)"
+                            lang mode))
+                   ((not (fboundp mode)) (format "%s 找不到 %s" lang mode)))))
+            (when reason (push (concat where reason) bad))))))
+    (when bad
+      (error "这些源码块导出后不会有高亮:\n%s\n\n出路:\n  · 映射到内置的纯 elisp mode —— (add-to-list 'org-src-lang-modes '(\"LANG\" . MODE))\n  · 或把 mode vendored 进 lib/ 再 load,像 htmlize 那样\n  · 裸 #+begin_src 若确实只是示例文本,改用 #+begin_example"
+             (mapconcat #'identity (nreverse bad) "\n")))))
+
 (defun blog-publish ()
   "全量重建站点。"
+  (blog--check-src-languages)
   (when (file-directory-p org-publish-timestamp-directory)
     (delete-directory org-publish-timestamp-directory t))
   (setq org-publish-cache nil)
