@@ -31,7 +31,7 @@ github.io 301 过去,两个地址都打不开。这里先指向 github.io:删掉
 ;;; org 源的元数据
 
 (defconst blog--keyword-re
-  "^[ \t]*#\\+\\(TITLE\\|DATE\\|DESCRIPTION\\|NAV\\):[ \t]*\\(.*?\\)[ \t]*$"
+  "^[ \t]*#\\+\\(TITLE\\|DATE\\|DESCRIPTION\\|NAV\\|EXCLUDE\\):[ \t]*\\(.*?\\)[ \t]*$"
   "抓 org 文件头部关键字。用正则而不是 `org-collect-keywords':
 后者要先把 buffer 切成 org-mode,batch 下为几个文件起全套 major-mode 不划算。")
 
@@ -72,7 +72,8 @@ github.io 301 过去,两个地址都打不开。这里先指向 github.io:删掉
                                     (string-to-number (match-string 1 nav)))
                     :nav-label (and nav (if (string-match "\\`[0-9]+[ \t]+\\(.*\\)\\'" nav)
                                             (match-string 1 nav)
-                                          nav)))
+                                          nav))
+                    :exclude (cdr (assoc "EXCLUDE" kw)))
               pages)))
     (sort (nreverse pages)
           (lambda (a b)
@@ -82,11 +83,28 @@ github.io 301 过去,两个地址都打不开。这里先指向 github.io:删掉
                 (string> da db)))))))
 
 (defun blog-articles ()
-  "只要文章:有 #+DATE 且不进导航的页面。
-about / 404 这类靠「没有 DATE 或进了导航」自动排除,不需要在这里列名字。"
+  "只要文章:有 #+DATE、不进导航、也没被 #+EXCLUDE 标记的页面。"
   (cl-remove-if (lambda (p) (or (null (plist-get p :date))
-                                (plist-get p :nav-order)))
+                                (plist-get p :nav-order)
+                                (plist-get p :exclude)))
                 (blog-pages)))
+
+(defun blog-check-page-roles ()
+  "每个 org 文件都得表明自己是什么,否则报错。
+
+页面的归属完全由头部关键字决定:有 #+DATE 是文章(进首页列表和 feed)、
+有 #+NAV 是导航页、有 #+EXCLUDE 是有意不列出的(404 之类)。
+三样都没有的话它照样导出成 HTML、照样进 sitemap,却**不进首页列表也不进
+feed** —— 而 make verify 只查断链和 token class、make check 只查零 diff,
+两道闸都是绿的。新写一篇文章忘了写 #+DATE 正是最高频的翻车路径,
+所以在这里拦掉。"
+  (let (bad)
+    (dolist (p (blog-pages))
+      (unless (or (plist-get p :date) (plist-get p :nav-order) (plist-get p :exclude))
+        (push (format "  %s" (file-name-nondirectory (plist-get p :file))) bad)))
+    (when bad
+      (error "这些页面没有表明身份,会导出但不出现在首页列表和 feed 里:\n%s\n\n三选一:\n  · 文章 -> 加 #+DATE: YYYY-MM-DD\n  · 导航页 -> 加 #+NAV: 序号 标签\n  · 有意不列出(如 404) -> 加 #+EXCLUDE: 原因"
+             (mapconcat #'identity (nreverse bad) "\n")))))
 
 (defun blog-latest-date ()
   "全站最新的文章日期。feed 的 <updated> 用它,不用 current-time。"
@@ -289,8 +307,9 @@ Atom 惯例是只给最近若干条,不是全量 —— 全量的话文章涨到
                   (format "    <lastmod>%s</lastmod>\n"
                           (or (plist-get p :date) (blog-latest-date)))
                   "  </url>\n"))
-        ;; 404 不能交给搜索引擎收录 —— 它是错误页,不是内容页。
-        (cl-remove-if (lambda (p) (equal (plist-get p :base) "404")) (blog-pages))
+        ;; #+EXCLUDE 标记的页面不交给搜索引擎 —— 404 是错误页,不是内容页。
+        ;; 用标记而不是写死文件名:将来多一个这类页面时不用回来改代码。
+        (cl-remove-if (lambda (p) (plist-get p :exclude)) (blog-pages))
         "")
        "</urlset>\n"))
     path))

@@ -179,6 +179,7 @@ org-publish 对每个文件调一次,所以环境的建立与还原都在单文�
          ;;    make check 报一片只有 #orgXXXXXXX 变化的 diff,根因极难看出来。
          :preparation-function
          ,(lambda (&rest _)
+            (blog-check-page-roles)
             (blog--check-src-languages)
             (when (file-directory-p org-publish-timestamp-directory)
               (delete-directory org-publish-timestamp-directory t))

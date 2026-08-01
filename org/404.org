@@ -1,5 +1,6 @@
 #+TITLE: 页面不存在
 #+DESCRIPTION: 404 —— 请求的页面不存在。
+#+EXCLUDE: 错误页,不进首页列表、feed 与 sitemap
 
 要找的页面不在这里。
 
