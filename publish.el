@@ -165,13 +165,17 @@ org-publish 对每个文件调一次,所以环境的建立与还原都在单文�
          :base-extension "org"
          :publishing-directory ,blog-root
          :publishing-function blog-publish-to-html
-         ;; 构建前的两件事都挂在项目上,不能只写在 blog-publish 里 ——
+         ;; 构建前的三件事都挂在项目上,不能只写在 blog-publish 里 ——
          ;; 走 org-export-dispatch 的 P p 时调的是 org-publish,不经过它。
          ;;
-         ;; 1. 源码块语言可用性。不查的话,从 Doom 发一篇带 #+begin_src rust
+         ;; 1. 页面身份。org 文件得三选一表明自己是文章(#+DATE)、导航页
+         ;;    (#+NAV)还是有意不列出(#+EXCLUDE)。都没有的话它照样导出、
+         ;;    照样进 sitemap,却不进首页列表也不进 feed —— 写新文章忘了写
+         ;;    #+DATE 正是最高频的翻车路径,而两道现成的闸都是绿的。
+         ;; 2. 源码块语言可用性。不查的话,从 Doom 发一篇带 #+begin_src rust
          ;;    的文章会静默导出成纯文本,make verify 也抓不到(class 对账只查
          ;;    "已出现的 class 有没有样式",查不出本该出现却没出现的 token)。
-         ;; 2. 清缓存。org-publish 的缓存除了增量时间戳还存 crossrefs(上次
+         ;; 3. 清缓存。org-publish 的缓存除了增量时间戳还存 crossrefs(上次
          ;;    分配的锚点 ID),而 org-export-get-reference 先查 crossrefs、
          ;;    查不到才落到 org-export-new-reference —— 那条递增 advice 会被
          ;;    缓存绕过。内容没变时两边碰巧一致,一旦删掉或移动一个标题,
